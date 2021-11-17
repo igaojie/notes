@@ -65,11 +65,152 @@ thwas was string example....wow!!! thwas was really string
 thwas is string example....wow!!! this is really string
 ```
 
+### format
+
+基本语法是通过 **{}** 和 **:** 来代替以前的 **%** 。
+
+```python
+a = ['a1', 'a2', 'a3','a4']
+b = ['b1', 'b2', 'b3']
+e = ('c1')
+f = ('d1', 'd2', 'd3')
+
+print("{} {}".format("a", "b")) # a b
+print("{} {}".format(a, b))  # ['a1', 'a2', 'a3', 'a4'] ['b1', 'b2', 'b3']
+print("{1} {0}".format(a, b))  # ['b1', 'b2', 'b3'] ['a1', 'a2', 'a3', 'a4'] 
+print("{}" . format(e)) # c1
+print("{}". format(f)) # ('d1', 'd2', 'd3')
+```
+
+
+
+## 元组
+
+Python的元组与列表类似，不同之处在于元组的元素不能修改。
+
+元组使用小括号，列表使用方括号。
+
+### tuple
+
+```python
+>>>tuple([1,2,3,4])
+ 
+(1, 2, 3, 4)
+ 
+>>> tuple({1:2,3:4})    #针对字典 会返回字典的key组成的tuple
+ 
+(1, 3)
+ 
+>>> tuple((1,2,3,4))    #元组会返回元组自身
+ 
+(1, 2, 3, 4)
+```
+
+
+
+
+
+# lambda
+
+不需要显式地定义函数，直接传入匿名函数更方便。
+
+```python
+>>> list(map(lambda x: x * x, [1, 2, 3, 4, 5, 6, 7, 8, 9]))
+[1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# lambda x: x * x 相当于下面：
+def f(x):
+    return x * x
+
+```
+
+匿名函数有个限制，就是只能有一个表达式，不用写`return`，返回值就是该表达式的结果。
+
+# 内置函数
+
+## zip
+
+**zip()** 函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的列表。
+
+如果各个迭代器的元素个数不一致，则返回列表长度与最短的对象相同，利用 * 号操作符，可以将元组解压为列表。
+
+```python
+a = ['a1', 'a2', 'a3','a4']
+b = ['b1', 'b2', 'b3']
+
+zipped = zip(a, b)
+
+print(zipped) # 返回对象 <zip object at 0x7fef16e29cd0>
+print(list(zipped))  # 转换为列表 [('a1', 'b1'), ('a2', 'b2'), ('a3', 'b3')]  元素个数与最短的列表一致
+
+aa, bb = zip(*zip(a, b))
+print(list(aa)) # ['a1', 'a2', 'a3'] 与 zip 相反，zip(*) 可理解为解压，返回二维矩阵式
+
+c = ', '.join('%s=%s' % t for t in zip(a, b))
+print(c) # a1=b1, a2=b2, a3=b3
+
+d = ', '.join('{}={}'.format(*t) for t in zip(a, b))
+print(d) ## a1=b1, a2=b2, a3=b3
+
+```
+
+https://stackoverflow.com/questions/7277072/smartest-way-to-join-two-lists-into-a-formatted-string
+
+```python
+from timeit import Timer
+from itertools import izip
+
+n = 300
+
+a = [str(f) for f in range(n)]
+b = [str(f) for f in range(n)]
+
+def func1():
+    return ', '.join([aa+'='+bb for aa in a for bb in b if a.index(aa) == b.index(bb)])
+
+def func2():
+    list = []
+    for i in range(len(a)):
+        list.append('%s=%s' % (a[i], b[i]))
+    return ', '.join(list)
+
+def func3():
+    return ', '.join('%s=%s' % t for t in zip(a, b))
+
+def func4():
+    return ', '.join('%s=%s' % t for t in izip(a, b)) # itertools 提供的izip 方法
+
+def func5():
+    pat = n * '%s=%%s, '
+    return pat % tuple(a) % tuple(b)
+
+d = dict(zip((1,2,3,4,5),('heavy','append','zip','izip','% formatting')))
+for i in xrange(1,6):
+    t = Timer(setup='from __main__ import func%d'%i, stmt='func%d()'%i)
+    print 'func%d = %s  %s' % (i,t.timeit(10),d[i])
+    
+    
+    
+func1 = 16.2272833558  heavy
+func2 = 0.00410247671143  append
+func3 = 0.00349569568199  zip
+func4 = 0.00301686387516  izip
+func5 = 0.00157338432678  % formatting    
+```
+
+# 常用标准库
+
+## itertools
+
+itertools - 为高效循环而创建迭代器的函数.
+
+
+
 # 框架
 
 ## twisted
 
-# Flask
+## Flask
 
 ### 安装
 

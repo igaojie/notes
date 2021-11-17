@@ -1,3 +1,16 @@
+# MYSQLD_MULTI
+
+## 检查状态
+
+```shell
+# mysqld_multi report
+Reporting MySQL servers
+MySQL server from group: mysqld3306 is running
+MySQL server from group: mysqld3308 is running
+```
+
+
+
 # ALTER
 
 ## ADD
