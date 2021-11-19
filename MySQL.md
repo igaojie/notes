@@ -233,7 +233,405 @@
 
 ## 开始
 
-1. 192服务的3308已经启动正常。接下来做slave配置。一步步来吧。
+1. `全量备份`174（主）的数据。
+
+   ```shell
+   # 主库服务器执行全量备份操作
+   cd /www/backup 
+   
+   xtrabackup --backup --host=127.0.0.1 --user=root --password='YOURPASSWORD' --port=3308 --target-dir=./x_backup
+   xtrabackup: recognized server arguments:
+   xtrabackup: recognized client arguments: --port=3306 --socket=/tmp/mysql.sock --backup=1 --host=127.0.0.1 --user=root --password=* --port=3308 --target-dir=./x_backup
+   211119 20:34:56  version_check Connecting to MySQL server with DSN 'dbi:mysql:;mysql_read_default_group=xtrabackup;host=127.0.0.1;port=3308;mysql_socket=/tmp/mysql.sock' as 'root'  (using password: YES).
+   211119 20:34:56  version_check Connected to MySQL server
+   211119 20:34:56  version_check Executing a version check against the server...
+   211119 20:34:56  version_check Done.
+   211119 20:34:56 Connecting to MySQL server host: 127.0.0.1, user: root, password: set, port: 3308, socket: /tmp/mysql.sock
+   ######啊啊啊啊啊啊啊啊啊啊  Xtrabackup 2.4.x 不支持。那就装 Xtrabackup 8.0吧。 
+   Error: MySQL 8.0 and Percona Server 8.0 are not supported by Percona Xtrabackup 2.4.x series. Please use Percona Xtrabackup 8.0.x for backups and restores.
+   
+   # 先去安装 Xtrabackup 8.0 了。
+   # 参考 Xtrabackup 章节。
+   
+   # 继续进行全量备份。
+   (base) [root@localhost backup]# xtrabackup --backup --host=127.0.0.1 --user=root --password='1db81ea576e76d9e' --port=3308 --target-dir=./x_backup
+   .................
+   xtrabackup: recognized client arguments: --port=3306 --socket=/tmp/mysql.sock --backup=1 --host=127.0.0.1 --user=root --password=* --port=3308 --target-dir=./x_backup
+   xtrabackup version 8.0.26-18 based on MySQL server 8.0.26 Linux (x86_64) (revision id: 4aecf82)
+   211119 20:46:07  version_check Connecting to MySQL server with DSN 'dbi:mysql:;mysql_read_default_group=xtrabackup;host=127.0.0.1;port=3308;mysql_socket=/tmp/mysql.sock' as 'root'  (using password: YES).
+   211119 20:46:07  version_check Connected to MySQL server
+   211119 20:46:07  version_check Executing a version check against the server...
+   211119 20:46:07  version_check Done.
+   211119 20:46:07 Connecting to MySQL server host: 127.0.0.1, user: root, password: set, port: 3308, socket: /tmp/mysql.sock
+   Using server version 8.0.26
+   211119 20:46:07 Executing LOCK INSTANCE FOR BACKUP...
+   xtrabackup: uses posix_fadvise().
+   xtrabackup: cd to /www/server/mysqldata/data3308/
+   xtrabackup: open files limit requested 0, set to 1024
+   xtrabackup: using the following InnoDB configuration:
+   xtrabackup:   innodb_data_home_dir = /www/server/mysqldata/data3308
+   xtrabackup:   innodb_data_file_path = ibdata1:10M:autoextend
+   xtrabackup:   innodb_log_group_home_dir = /www/server/mysqldata/data3308
+   xtrabackup:   innodb_log_files_in_group = 2
+   xtrabackup:   innodb_log_file_size = 50331648
+   Number of pools: 1
+   xtrabackup: inititialize_service_handles suceeded
+   211119 20:46:07 Connecting to MySQL server host: 127.0.0.1, user: root, password: set, port: 3308, socket: /tmp/mysql.sock
+   xtrabackup: Redo Log Archiving is not set up.
+   211119 20:46:07 >> log scanned up to (26313712986)
+   xtrabackup: Generating a list of tablespaces
+   xtrabackup: Generating a list of tablespaces
+   Scanning './'
+   Completed space ID check of 2 files.
+   211119 20:53:10 Executing UNLOCK INSTANCE
+   211119 20:53:10 All tables unlocked
+   211119 20:53:10 [00] Copying ib_buffer_pool to /www/backup/x_backup/ib_buffer_pool
+   211119 20:53:10 [00]        ...done
+   211119 20:53:10 Backup created in directory '/www/backup/x_backup/'
+   MySQL binlog position: filename 'binlog.000003', position '156'
+   211119 20:53:10 [00] Writing /www/backup/x_backup/backup-my.cnf
+   211119 20:53:10 [00]        ...done
+   211119 20:53:10 [00] Writing /www/backup/x_backup/xtrabackup_info
+   211119 20:53:10 [00]        ...done
+   xtrabackup: Transaction log of lsn (26313712986) to (26314972526) was copied.
+   211119 20:53:11 completed OK!
+   ...........
+   
+   
+   # 执行 xtrabackup --prepare 
+   
+   # xtrabackup --prepare --host=127.0.0.1 --user=root --password='1db81ea576e76d9e' --port=3308 --target-dir=./x_backup
+   xtrabackup: recognized server arguments: --innodb_checksum_algorithm=crc32 --innodb_log_checksums=1 --innodb_data_file_path=ibdata1:10M:autoextend --innodb_log_files_in_group=2 --innodb_log_file_size=50331648 --innodb_page_size=16384 --innodb_undo_directory=./ --innodb_undo_tablespaces=2 --server-id=0 --innodb_log_checksums=ON --innodb_redo_log_encrypt=0 --innodb_undo_log_encrypt=0
+   xtrabackup: recognized client arguments: --prepare=1 --host=127.0.0.1 --user=root --password=* --port=3308 --target-dir=./x_backup
+   xtrabackup version 8.0.26-18 based on MySQL server 8.0.26 Linux (x86_64) (revision id: 4aecf82)
+   xtrabackup: cd to /www/backup/x_backup/
+   xtrabackup: This target seems to be not prepared yet.
+   Number of pools: 1
+   xtrabackup: xtrabackup_logfile detected: size=8388608, start_lsn=(26313712986)
+   xtrabackup: using the following InnoDB configuration for recovery:
+   xtrabackup:   innodb_data_home_dir = .
+   xtrabackup:   innodb_data_file_path = ibdata1:10M:autoextend
+   xtrabackup:   innodb_log_group_home_dir = .
+   xtrabackup:   innodb_log_files_in_group = 1
+   xtrabackup:   innodb_log_file_size = 8388608
+   xtrabackup: inititialize_service_handles suceeded
+   xtrabackup: using the following InnoDB configuration for recovery:
+   xtrabackup:   innodb_data_home_dir = .
+   xtrabackup:   innodb_data_file_path = ibdata1:10M:autoextend
+   xtrabackup:   innodb_log_group_home_dir = .
+   xtrabackup:   innodb_log_files_in_group = 1
+   xtrabackup:   innodb_log_file_size = 8388608
+   xtrabackup: Starting InnoDB instance for recovery.
+   xtrabackup: Using 104857600 bytes for buffer pool (set by --use-memory parameter)
+   PUNCH HOLE support available
+   Uses event mutexes
+   GCC builtin __atomic_thread_fence() is used for memory barrier
+   Compressed tables use zlib 1.2.11
+   Number of pools: 1
+   Using CPU crc32 instructions
+   Directories to scan './'
+   Scanning './'
+   Completed space ID check of 69 files.
+   Initializing buffer pool, total size = 128.000000M, instances = 1, chunk size =128.000000M
+   Completed initialization of buffer pool
+   page_cleaner coordinator priority: -20
+   page_cleaner worker priority: -20
+   page_cleaner worker priority: -20
+   page_cleaner worker priority: -20
+   The log sequence number 25189905561 in the system tablespace does not match the log sequence number 26313712986 in the ib_logfiles!
+   Database was not shutdown normally!
+   Starting crash recovery.
+   Starting to parse redo log at lsn = 26313712685, whereas checkpoint_lsn = 26313712986 and start_lsn = 26313712640
+   Doing recovery: scanned up to log sequence number 26314952544
+   Log background threads are being started...
+   Applying a batch of 991 redo log records ...
+   10%
+   20%
+   30%
+   40%
+   50%
+   60%
+   70%
+   80%
+   90%
+   100%
+   Apply batch completed!
+   Using undo tablespace './undo_001'.
+   Using undo tablespace './undo_002'.
+   Opened 2 existing undo tablespaces.
+   GTID recovery trx_no: 8556730
+   Parallel initialization of rseg complete
+   Time taken to initialize rseg using 4 thread: 10331 ms.
+   ........
+   .....
+   ....
+   Starting shutdown...
+   Log background threads are being closed...
+   Shutdown completed; log sequence number 26314953238
+   211119 20:54:52 completed OK!
+   (base) [root@localhost backup]#
+   .....................................................................
+   
+   ```
+
+   
+
+2. 同步174备份数据到192。
+
+   ```shell
+   # 在174服务器上执行 同步数据到 192。不打包了 直接传吧。。
+   # rsync -avzP ./x_backup root@192.168.1.192:/data2/backup
+   root@192.168.1.192's password: 
+   sending incremental file list
+   x_backup/
+   x_backup/backup-my.cnf
+               475 100%    0.00kB/s    0:00:00 (xfr#1, to-chk=204/206)
+   x_backup/binlog.000003
+               156 100%  152.34kB/s    0:00:00 (xfr#2, to-chk=203/206)
+   x_backup/binlog.index
+                16 100%   15.62kB/s    0:00:00 (xfr#3, to-chk=202/206)
+   x_backup/ib_buffer_pool
+           143,784 100%   12.47MB/s    0:00:00 (xfr#4, to-chk=201/206)
+   x_backup/ib_logfile0
+        50,331,648 100%   65.04MB/s    0:00:00 (xfr#5, to-chk=200/206)
+   x_backup/ib_logfile1
+        50,331,648 100%   33.90MB/s    0:00:01 (xfr#6, to-chk=199/206)
+   x_backup/ibdata1
+   ........
+   x_backup/sys/sys_config.ibd
+           114,688 100%  163.98kB/s    0:00:00 (xfr#199, to-chk=0/206)
+   
+   sent 1,938,594,981 bytes  received 3,841 bytes  4,102,854.65 bytes/sec
+   total size is 12,044,096,061  speedup is 6.21
+   
+   
+   # 在192上查看
+   pwd
+   /data2/backup
+   
+   [root@localhost backup]# ll
+   drwxr-xr-x 3 root root 4096 11月 19 19:33 backup
+   drwxr-x--- 8 root root 4096 11月 19 20:54 x_backup 
+   
+   
+   # 同步成功 继续下一步。
+   ```
+
+   
+
+3. 在192上将接收到的备份数据`全量恢复`
+
+   192上没有安装percona xtrabackup ，先安装。按照步骤：https://www.percona.com/doc/percona-xtrabackup/2.4/installation/yum_repo.html
+
+   
+
+   ```shell
+   # 1. 先停掉192上mysql 3308 必须停掉。
+   
+   mysqld_multi stop 3308  # 如果停止不了 ，检查 3308库上是否存在 mysqld_multi的那个账号和密码 。
+   mysqld_multi report 
+   [root@localhost backup]# mysqld_multi report
+   Reporting MySQL servers
+   MySQL server from group: mysqld3306 is running
+   MySQL server from group: mysqld3308 is not running
+   
+   
+   # 2.将3308库的datadir目录 进行备份重命名,保证3308库 datadir目录为空。
+   cd /data2/www/server/mysqldata/
+   mv data3308 data3308_old
+   
+   # 3. 全量恢复操作
+   cd /data2/backup/  # 回到备份数据目录执行全量恢复。
+   xtrabackup  --defaults-file=/www/server/mysql-8.0.26/my.cnf  --target-dir=./x_backup --copy-back  
+   
+   ###### --copy-back 保留数据进行恢复。不想保存备份，可以使用 -–move-back。
+   211119 20:20:42 [01] Copying ./mysql/help_category.frm to /data2/www/server/mysqldata/data3308/mysql/help_category.frm
+   211119 20:20:42 [01]        ...done
+   211119 20:20:42 [01] Copying ./ibtmp1 to /data2/www/server/mysqldata/data3308/ibtmp1
+   211119 20:20:43 [01]        ...done
+   211119 20:20:43 completed OK!
+   
+   # 4.修改目录权限
+   cd /data2/www/server/mysqldata/
+   [root@localhost mysqldata]# ll
+   总用量 8
+   drwxr-x--- 8 root  root  4096 11月 19 20:20 data3308
+   drwxr-xr-x 6 mysql mysql 4096 11月 19 20:14 data3308_old
+   [root@localhost mysqldata]# chown -R mysql:mysql ./data3308
+   
+   
+   # 恢复完成
+   ```
+
+   
+
+4.  启动 从库
+
+   ```shell
+   # 启动
+   mysqld_multi start 3308  --log=./mysqld_multi_tmp.log #加个日志 万一起不来 可以看看啥情况。
+   
+   mysqld_multi report
+   Reporting MySQL servers
+   MySQL server from group: mysqld3306 is running
+   MySQL server from group: mysqld3308 is running
+   
+   # 好 ，起来了。@@
+   
+   ```
+
+   
+
+5. 开始同步
+
+   ```shell
+   # 1. 查看同步过来的数据 到了什么位置。binlog_pos 
+   cat /data2/www/server/mysqldata/data3308/xtrabackup_info
+   uuid = a6495e1e-4937-11ec-a1fb-b499baacf410
+   name =
+   tool_name = xtrabackup
+   tool_command = --backup --host=127.0.0.1 --user=root --password=... --port=3308 --target-dir=./x_backup
+   tool_version = 8.0.26-18
+   ibbackup_version = 8.0.26-18
+   server_version = 8.0.26
+   start_time = 2021-11-19 20:46:07
+   end_time = 2021-11-19 20:53:10
+   lock_time = 2
+   binlog_pos = filename 'binlog.000003', position '156'
+   innodb_from_lsn = 0
+   innodb_to_lsn = 26314745406
+   partial = N
+   incremental = N
+   format = file
+   compressed = N
+   encrypted = N
+   [root@localhost mysqldata]#
+   
+   #  binlog_pos = filename 'binlog.000003', position '156' 说明 需要从 filename 'binlog.000003', position '156' 开始同步。
+   
+   # 2. 在主库上新建一个用户 专门用来进行数据同步。
+   mysql>
+   mysql> grant  replication  slave  on *.* to  'slave3308'@'192.168.1.192'  identified by  'slave3308';
+   ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'identified by  'slave3308'' at line 1
+   # 出现这样的错误 ，是因为mysql 8.0 取消了这种创建用户并且赋权限的快捷方式操作。 需要分开来。
+   # 参考：https://ma.ttias.be/mysql-8-removes-shorthand-creating-user-permissions/
+   mysql>
+   mysql>
+   
+   mysql> CREATE USER 'slave3308'@'192.168.1.192' IDENTIFIED BY 'slave3308';
+   Query OK, 0 rows affected (0.13 sec)
+   
+   mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave3308'@'192.168.1.192';
+   Query OK, 0 rows affected (0.01 sec)
+   
+   
+   # 检查是否创建成功
+   mysql> select User from mysql.user\G;
+   *************************** 1. row ***************************
+   User: slave3308
+   ......
+   
+   
+   # 3. 去192从库做同步配置。
+    mysql -h127.0.0.1 -P3308 -uroot -p # 从库服务器 192 ，登录3308
+   Enter password:
+   Welcome to the MySQL monitor.  Commands end with ; or \g.
+   Your MySQL connection id is 9
+   Server version: 8.0.26 MySQL Community Server - GPL
+   
+   Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+   
+   Oracle is a registered trademark of Oracle Corporation and/or its
+   affiliates. Other names may be trademarks of their respective
+   owners.
+   
+   Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+   
+   mysql>
+   mysql> CHANGE MASTER TO MASTER_HOST='192.168.1.174',
+       ->     MASTER_PORT=3308,
+       ->     MASTER_USER='slave3308',
+       ->     MASTER_PASSWORD='slave3308',
+       ->     MASTER_LOG_FILE='binlog.000003',
+       ->     MASTER_LOG_POS=156;
+   Query OK, 0 rows affected, 9 warnings (0.39 sec)
+   
+   
+   # 开启 slave 。开始同步。
+   mysql> start slave;
+   Query OK, 0 rows affected, 1 warning (0.04 sec)
+   
+   
+   mysql> show slave status\G;
+   *************************** 1. row ***************************
+                  Slave_IO_State: Waiting for source to send event
+                     Master_Host: 192.168.1.174
+                     Master_User: slave3308
+                     Master_Port: 3308
+                   Connect_Retry: 60
+                 Master_Log_File: binlog.000003
+             Read_Master_Log_Pos: 27444900
+                  Relay_Log_File: localhost-relay-bin.000004
+                   Relay_Log_Pos: 5576196
+           Relay_Master_Log_File: binlog.000003
+                Slave_IO_Running: Yes # YES 
+               Slave_SQL_Running: Yes # YES
+                 Replicate_Do_DB:
+             Replicate_Ignore_DB:
+              Replicate_Do_Table:
+          Replicate_Ignore_Table:
+         Replicate_Wild_Do_Table:
+     Replicate_Wild_Ignore_Table:
+                      Last_Errno: 0
+                      Last_Error:
+                    Skip_Counter: 0
+             Exec_Master_Log_Pos: 5576031
+                 Relay_Log_Space: 27445278
+                 Until_Condition: None
+                  Until_Log_File:
+                   Until_Log_Pos: 0
+              Master_SSL_Allowed: No
+              Master_SSL_CA_File:
+              Master_SSL_CA_Path:
+                 Master_SSL_Cert:
+               Master_SSL_Cipher:
+                  Master_SSL_Key:
+           Seconds_Behind_Master: 3697
+   Master_SSL_Verify_Server_Cert: No
+                   Last_IO_Errno: 0
+                   Last_IO_Error:
+                  Last_SQL_Errno: 0
+                  Last_SQL_Error:
+     Replicate_Ignore_Server_Ids:
+                Master_Server_Id: 3308
+                     Master_UUID: 5c186035-20dd-11ec-a80a-b499baacf410
+                Master_Info_File: mysql.slave_master_info
+                       SQL_Delay: 0
+             SQL_Remaining_Delay: NULL
+         Slave_SQL_Running_State: waiting for handler commit
+              Master_Retry_Count: 86400
+                     Master_Bind:
+         Last_IO_Error_Timestamp:
+        Last_SQL_Error_Timestamp:
+                  Master_SSL_Crl:
+              Master_SSL_Crlpath:
+              Retrieved_Gtid_Set:
+               Executed_Gtid_Set:
+                   Auto_Position: 0
+            Replicate_Rewrite_DB:
+                    Channel_Name:
+              Master_TLS_Version:
+          Master_public_key_path:
+           Get_master_public_key: 0
+               Network_Namespace:
+   1 row in set, 1 warning (0.01 sec)
+   ```
+
+   
+
+6. 至此，我们也完成了主库不停机加从库的操作。Oh Ye！
+
+7. 
 
 # Xtrabackup
 
@@ -410,6 +808,24 @@ For more information, please visit:
    xtrabackup version 2.4.24 based on MySQL server 5.7.35 Linux (x86_64) (revision id: b4ee263)
    
    ```
+   
+5. 卸载 2.4版本
+
+   ```shell
+   yum remove percona-xtrabackup-24
+   ```
+   
+   
+   
+5. 安装 
+
+   ```shell
+   yum install  percona-xtrabackup-80
+   ```
+   
+   
+   
+8. 如何让两个版本共存？percona-xtrabackup-80能否处理 低版本的mysql的备份恢复呢？疑问？
 
 ## 备份
 
