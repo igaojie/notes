@@ -126,6 +126,79 @@ def f(x):
 
 匿名函数有个限制，就是只能有一个表达式，不用写`return`，返回值就是该表达式的结果。
 
+# 函数
+
+## *args,**kwargs
+
+这两个是python中的可变参数。*args表示任何多个无名参数，它是一个tuple；**kwargs表示关键字参数，它是一个dict。并且同时使用*args和kwargs时，必须*args参数列要在**kwargs前，像foo(a=1, b='2', c=3, a', 1, None, )这样调用的话，会提示语法错误“SyntaxError: non-keyword arg after keyword arg”。
+
+```python
+def foo(*args, **kwargs):
+    print("args = ", args)
+    print("kwargs = ", kwargs)
+
+    print("-" * 50)
+
+#if __name__ == "__name__":
+    
+foo()
+foo(a=1, b=2, c=3)
+foo(1, 2, 3,4, a=1, b=2, c=3)
+foo('a', 1, None, a =1, b = '2', c=3)
+
+l = [1, 2, 3]
+print(*l) # 1, 2, 3
+```
+
+
+
+
+
+# 生成器
+
+### yield
+
+```python
+def my_generator(*args):
+    print("starting up")
+    yield 1
+
+    print("work in ")
+    yield 2
+
+    print("still work in ")
+    yield 3
+
+    print("done")
+    yield 4
+
+# for n in my_generator():
+#     print("-----",n)
+
+gen = my_generator()
+
+while True:
+    try:
+        n = gen.__next__()
+    except StopIteration:
+        break
+    else:
+        print("------", n)    
+        
+        
+output::
+starting up
+------ 1
+work in 
+------ 2
+still work in 
+------ 3
+done
+------ 4        
+```
+
+
+
 # 内置函数
 
 ## zip
@@ -264,6 +337,14 @@ python test/flask_server.py
 127.0.0.1 - - [14/Nov/2021 09:57:45] "GET /b HTTP/1.1" 200 -
 127.0.0.1 - - [14/Nov/2021 09:57:47] "GET /c HTTP/1.1" 200 -
 ```
+
+# 常用包
+
+## execjs
+
+## HTTPConnection
+
+
 
 
 

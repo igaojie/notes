@@ -1,3 +1,13 @@
+# 常用命令
+
+## rsync
+
+```shell
+rsync -av --progress ./ user@ip:/xxx/xxx/xxx/path
+```
+
+
+
 # ELK
 
 ## 安装
