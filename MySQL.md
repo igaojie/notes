@@ -565,15 +565,15 @@
    mysql> show slave status\G;
    *************************** 1. row ***************************
                   Slave_IO_State: Waiting for source to send event
-                     Master_Host: 192.168.1.174
-                     Master_User: slave3308
-                     Master_Port: 3308
-                   Connect_Retry: 60
-                 Master_Log_File: binlog.000003
-             Read_Master_Log_Pos: 27444900
-                  Relay_Log_File: localhost-relay-bin.000004
-                   Relay_Log_Pos: 5576196
-           Relay_Master_Log_File: binlog.000003
+                     Master_Host: 192.168.1.174 # 主库host
+                     Master_User: slave3308 #主库用户的用户名
+                     Master_Port: 3308 #主库端口号
+                   Connect_Retry: 60 
+                 Master_Log_File: binlog.000003 # io线程拉取主库binlog的位置
+             Read_Master_Log_Pos: 27444900 # io线程拉取主库binlog的位置
+                  Relay_Log_File: localhost-relay-bin.000004 #sql线程执行relay log的位置
+                   Relay_Log_Pos: 5576196 # sql线程执行relay log的位置
+           Relay_Master_Log_File: binlog.000003 # sql线程执行的relay log相对于主库binlog的位置
                 Slave_IO_Running: Yes # YES 
                Slave_SQL_Running: Yes # YES
                  Replicate_Do_DB:
@@ -585,8 +585,8 @@
                       Last_Errno: 0
                       Last_Error:
                     Skip_Counter: 0
-             Exec_Master_Log_Pos: 5576031
-                 Relay_Log_Space: 27445278
+             Exec_Master_Log_Pos: 5576031 # sql线程执行的relay log相对于主库binlog的位置
+                 Relay_Log_Space: 27445278 # 
                  Until_Condition: None
                   Until_Log_File:
                    Until_Log_Pos: 0
@@ -596,14 +596,14 @@
                  Master_SSL_Cert:
                Master_SSL_Cipher:
                   Master_SSL_Key:
-           Seconds_Behind_Master: 3697
+           Seconds_Behind_Master: 3697  # 衡量master与slave之间延时的一个重要参数
    Master_SSL_Verify_Server_Cert: No
                    Last_IO_Errno: 0
                    Last_IO_Error:
                   Last_SQL_Errno: 0
                   Last_SQL_Error:
      Replicate_Ignore_Server_Ids:
-                Master_Server_Id: 3308
+                Master_Server_Id: 3308 # 主库 server-id
                      Master_UUID: 5c186035-20dd-11ec-a80a-b499baacf410
                 Master_Info_File: mysql.slave_master_info
                        SQL_Delay: 0
@@ -625,13 +625,136 @@
            Get_master_public_key: 0
                Network_Namespace:
    1 row in set, 1 warning (0.01 sec)
+   
+   
+   
+   mysql> show  master status\G;
+   *************************** 1. row ***************************
+                File: binlog.000009
+            Position: 98124023
+        Binlog_Do_DB:
+    Binlog_Ignore_DB:
+   Executed_Gtid_Set:
+   1 row in set (0.03 sec)
    ```
 
    
 
 6. 至此，我们也完成了主库不停机加从库的操作。Oh Ye！
 
-7. 
+## READ ONLY 
+
+[`super_read_only`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_super_read_only)
+
+[`read_only`](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_read_only)
+
+```mysql
+# 设置只读
+mysql> flush tables with read lock;
+mysql> set global read_only=1;
+
+#取消只读
+mysql> unlock tables;
+mysql> set global read_only=0;
+
+# read_only=1只读模式，限定的是普通用户进行数据修改的操作，但不会限定具有super权限的用户的数据修改操作(但是如果设置了"super_read_only=on"， 则就会限定具有super权限的用户的数据修改操作了)；
+```
+
+
+
+## 问题
+
+1. 延迟过高
+
+​	 在从库执行 show slave status\G; 发现  Seconds_Behind_Master: 1812 这个一直在增大，特别是主库有批量插入的情况下。
+
+​     通过查询官方文档，https://dev.mysql.com/doc/refman/8.0/en/replication-options-replica.html  ，mysql 8.0 提供了 [`replica_parallel_workers`](https://dev.mysql.com/doc/refman/8.0/en/replication-options-replica.html#sysvar_replica_parallel_workers) 的参数来并行复制。
+
+```mysql
+mysql> show variables like '%parallel_workers';
++--------------------------+-------+
+| Variable_name            | Value |
++--------------------------+-------+
+| replica_parallel_workers | 0     | # 默认为0 。从 MySQL 8.0.27开始，默认为4.
+| slave_parallel_workers   | 0     | # 从MySQL 8.0.26开始，该参数会慢慢会替换掉，使用 replica_parallel_workers。默认为0
++--------------------------+-------+
+2 rows in set (0.01 sec)
+
+```
+
+ 登录从库执行： 
+
+```shell
+> set global replica_parallel_workers = 4;  
+> stop slave;
+> start slave;
+
+# 执行以上操作后，发现依然同步很慢，并且 Seconds_Behind_Master 还是持续增长。必须用大招了
+
+> show variables like 'sync_binlog';
++---------------+-------+
+| Variable_name | Value |
++---------------+-------+
+| sync_binlog   | 1     |
++---------------+-------+
+1 row in set (0.01 sec)
+
+mysql> show variables like 'innodb_flush_log_at_trx_commit';
++--------------------------------+-------+
+| Variable_name                  | Value |
++--------------------------------+-------+
+| innodb_flush_log_at_trx_commit | 1     |
++--------------------------------+-------+
+1 row in set (0.00 sec)
+
+mysql> set global sync_binlog  = 0;
+mysql > set global innodb_flush_log_at_trx_commit = 0;
+
+# 眼看着 Seconds_Behind_Master 的数字在减小 。接下来研究下这两个参数的关系
+```
+
+2. innodb_flush_log_at_trx_commit和sync_binlog
+
+   https://support.huaweicloud.com/bestpractice-rds/rds_02_0010.html
+
+   **“innodb_flush_log_at_trx_commit”**和**“sync_binlog”**两个参数是控制MySQL磁盘写入策略以及数据安全性的关键参数。当两个参数为不同值时，在性能，安全角度下会产生不同的影响。
+
+   **innodb_flush_log_at_trx_commit**：
+
+   - 0：日志缓存区将每隔一秒写到日志文件中，并且将日志文件的数据刷新到磁盘上。该模式下在事务提交时不会主动触发写入磁盘的操作。当设置为0，该模式速度最快，但不太安全，mysqld进程的崩溃会导致上一秒钟所有事务数据的丢失；
+   - 1：每次事务提交时MySQL都会把日志缓存区的数据写入日志文件中，并且刷新到磁盘中，该模式为系统默认。该模式是最安全的，但也是最慢的一种方式。在mysqld服务崩溃或者服务器主机宕机的情况下，日志缓存区只有可能丢失最多一个语句或者一个事务；
+   - 2：每次事务提交时MySQL都会把日志缓存区的数据写入日志文件中，但是并不会同时刷新到磁盘上。该模式下，MySQL会每秒执行一次刷新磁盘操作。该模式速度较快，较取值为0情况下更安全，只有在操作系统崩溃或者系统断电的情况下，上一秒钟所有事务数据才可能丢失；
+
+   **sync_binlog=1 or N：**
+
+   - 默认情况下，并不是每次写入时都将binlog日志文件与磁盘同步。因此如果操作系统或服务器崩溃，有可能binlog中最后的语句丢失。
+
+   - 为了防止这种情况，你可以使用**“sync_binlog”**全局变量（1是最安全的值，但也是最慢的），使binlog在每N次binlog日志文件写入后与磁盘同步。
+
+![image-20211123145125781](/Users/shaogaojie/Library/Application Support/typora-user-images/image-20211123145125781.png)
+
+
+
+
+
+2. 跳过错误 继续同步
+
+```mysql
+STOP SLAVE;
+Query OK, 0 rows affected, 1 warning (0.07 sec)
+
+mysql> SET GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> start slave;
+Query OK, 0 rows affected, 1 warning (0.05 sec)
+```
+
+3.  试试
+
+4. 哈哈
+
+
 
 # Xtrabackup
 
@@ -1083,4 +1206,6 @@ Using:
 --verbose          Be more verbose.
 --version          Print the version number and exit.
 ```
+
+## 常用命令
 

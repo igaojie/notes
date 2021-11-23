@@ -83,7 +83,51 @@ https://www.elastic.co/guide/en/kibana/7.9/alert-action-settings-kb.html#general
 
 6. xx
 
-7. 
+# SSH免密登录
+
+SSH免密登录一般可以采用下面三种方式，看个人习惯。
+
+## ① ssh-copy-id
+
+```shell
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@xx.xx.xx.xx  # 然后输入对应的密码即可。
+```
+
+## ② scp
+
+```shell
+# 通过 scp 命令直接将该文件远程复制过去，使用这种方式需要注意，如果你之前已经配置了其它服务器上的密钥，这是使用这种方法，就会覆盖掉你原来的密钥，这时候是不建议使用这种方式的，如果你是先将该文件复制到服务器上的一个目录下，然后在使用追加的方式，将密钥追加到 authorized_keys 也是完全 OK 的。
+scp -p ~/.ssh/id_rsa.pub root@:/root/.ssh/authorized_keys
+```
+
+## ③ 纯手工复制
+
+通过手工复制。将本地 id_rsa.pub 文件的内容拷贝至远程服务器的 ~/.ssh/authorized_keys 文件中也完全可以的。
+
+先使用 cat 命令查看当前的公钥，然后复制，在到目标服务器上去粘贴。
+
+### 别名配置
+
+```shell
+vim ~/.ssh/config
+# 添加以下内容
+Host server_name
+        HostName xxx.xxx.xxx.xxx
+        User root
+        Port 22
+        
+# 保存退出
+
+ssh server_name # 即可直接登入服务器。方便很多。
+```
+
+
+
+
+
+
+
+
 
 # 常见问题
 
