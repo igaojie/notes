@@ -72,6 +72,11 @@ net.ipv4.ip_forward = 1
    # apt-get update
    # apt-get install vim
    # apt-get install telnet 等等类似
+   
+   apt-get update
+   apt-get install iputils-ping # ping
+   
+   apt install -y iproute2  # ip
    ```
 
    
