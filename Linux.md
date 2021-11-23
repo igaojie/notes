@@ -12,6 +12,23 @@ rsync -av --progress ./ user@ip:/xxx/xxx/xxx/path
 
 ## 安装
 
+## Filebeat
+
+### 开启mysql模块
+
+https://help.aliyun.com/document_detail/170479.html
+
+```shell
+> filebeat modules enable mysql
+> vim /etc/filebeat/modules.d/mysql.yml
+
+var.paths: ["/www/server/data/mysql-slow.log","/data2/www/server/mysqldata/data3308/mysql-slow.log"] # 打开
+
+> service filebeat restart
+```
+
+
+
 ### 启动命令
 
 ```shell

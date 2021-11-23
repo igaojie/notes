@@ -1,3 +1,96 @@
+# requirement.txt
+
+1. 把环境中的依赖写入 requirement.txt 中 https://pip.pypa.io/en/stable/cli/pip_install/
+
+```shell
+> pip freeze > ./requirements.txt 
+
+> cat ./requirements.txt
+
+aiohttp==3.8.0
+aiosignal==1.2.0
+async-timeout==4.0.1
+asynctest==0.13.0
+attrs @ file:///tmp/build/80754af9/attrs_1620827162558/work   # Since version 19.1, pip also supports direct references
+Automat @ file:///tmp/build/80754af9/automat_1600298431173/work
+autopep8 @ file:///tmp/build/80754af9/autopep8_1620866417880/work
+bcrypt @ file:///opt/concourse/worker/volumes/live/25966884-1a49-4448-62e7-44563eba29d2/volume/bcrypt_1597936171818/work
+certifi==2021.10.8
+cffi @ file:///opt/concourse/worker/volumes/live/4a8f7628-1917-402a-5a6a-cdafcc3ec547/volume/cffi_1625814707380/work
+charset-normalizer==2.0.7
+click==8.0.3
+constantly==15.1.0
+cryptography @ file:///opt/concourse/worker/volumes/live/3a00959b-c8b7-4878-6ff0-ab8e24d27201/volume/cryptography_1635366586923/work
+cssselect==1.1.0
+fake-useragent==0.1.11
+Faker==9.8.2
+Flask==2.0.2
+frozenlist==1.2.0
+hyperlink @ file:///tmp/build/80754af9/hyperlink_1610130746837/work
+idna @ file:///tmp/build/80754af9/idna_1622654382723/work
+importlib-metadata @ file:///opt/concourse/worker/volumes/live/f3c3a723-0733-424b-6c0e-af69ac95b59a/volume/importlib-metadata_1631916705096/work
+incremental==17.5.0
+iniconfig @ file:///home/linux1/recipes/ci/iniconfig_1610983019677/work
+itemadapter @ file:///tmp/build/80754af9/itemadapter_1626442940632/work
+itemloaders==1.0.4
+itsdangerous==2.0.1
+Jinja2==3.0.3
+jmespath==0.10.0
+lxml @ file:///opt/concourse/worker/volumes/live/a4879036-1466-48b6-6c8d-95f5cf7bc17d/volume/lxml_1616443217052/work
+MarkupSafe==2.0.1
+more-itertools @ file:///tmp/build/80754af9/more-itertools_1622818384463/work
+multidict==5.2.0
+packaging @ file:///tmp/build/80754af9/packaging_1625611678980/work
+parsel @ file:///opt/concourse/worker/volumes/live/e81ee83a-e2f5-46f7-650e-db01191c338f/volume/parsel_1613041556142/work
+pluggy @ file:///opt/concourse/worker/volumes/live/f85b5d5a-abad-4f46-46ad-4ead594efa77/volume/pluggy_1615976299968/work
+Protego==0.1.16
+py @ file:///tmp/build/80754af9/py_1607971587848/work
+pyasn1 @ file:///Users/ktietz/demo/mc3/conda-bld/pyasn1_1629708007385/work
+pyasn1-modules==0.2.8
+pycodestyle @ file:///tmp/build/80754af9/pycodestyle_1615748559966/work
+pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
+PyDispatcher==2.0.5
+PyHamcrest @ file:///tmp/build/80754af9/pyhamcrest_1615748656804/work
+PyMySQL==1.0.2
+pyOpenSSL @ file:///tmp/build/80754af9/pyopenssl_1635333100036/work
+pyparsing @ file:///home/linux1/recipes/ci/pyparsing_1610983426697/work
+pytest==6.2.4
+pytest-runner @ file:///tmp/build/80754af9/pytest-runner_1623663836848/work
+python-dateutil==2.8.2
+queuelib==1.5.0
+requests==2.26.0
+Scrapy @ file:///opt/concourse/worker/volumes/live/21bd99f8-79fa-46a8-46c8-e8618719a350/volume/scrapy_1606864741462/work
+scrapy-fake-useragent==1.4.4
+scrapy-mysql-pipeline==2019.7.19
+service-identity @ file:///Users/ktietz/demo/mc3/conda-bld/service_identity_1629460757137/work
+six @ file:///tmp/build/80754af9/six_1623709665295/work
+text-unidecode==1.3
+toml @ file:///tmp/build/80754af9/toml_1616166611790/work
+Twisted @ file:///opt/concourse/worker/volumes/live/3dd1a2f9-4715-4156-6acd-a4a3a6d6c798/volume/twisted_1614874390289/work
+typing-extensions @ file:///tmp/build/80754af9/typing_extensions_1631814937681/work
+urllib3==1.26.7
+w3lib @ file:///Users/ktietz/demo/mc3/conda-bld/w3lib_1629359764703/work
+Werkzeug==2.0.2
+yarl==1.7.2
+zipp @ file:///tmp/build/80754af9/zipp_1633618647012/work
+zope.interface @ file:///opt/concourse/worker/volumes/live/e2e9977a-a3b7-4323-6e48-b61fb3ed115b/volume/zope.interface_1625036168072/work
+
+```
+
+2. 项目运行环境安装 requirement.txt 所包含的依赖
+
+   ```shell
+   pip install -r requirement.txt
+   ```
+
+   
+
+3. xx
+
+4. xx
+
+5. ss
+
 # 控制语句
 
 ## 三元运算符 *
