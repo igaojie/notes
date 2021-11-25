@@ -6,7 +6,82 @@
 rsync -av --progress ./ user@ip:/xxx/xxx/xxx/path
 ```
 
+## awk
 
+```shell
+awk -help
+Usage: awk [POSIX or GNU style options] -f progfile [--] file ...
+Usage: awk [POSIX or GNU style options] [--] 'program' file ...
+POSIX options:		GNU long options: (standard)
+	-f progfile		--file=progfile
+	-F fs			--field-separator=fs # 分隔符 比如nginx的access log ： awk -F \" '{print $6}' 按照双引号为分隔符分割
+	-v var=val		--assign=var=val
+Short options:		GNU long options: (extensions)
+	-b			--characters-as-bytes
+	-c			--traditional
+	-C			--copyright
+	-d[file]		--dump-variables[=file]
+	-e 'program-text'	--source='program-text'
+	-E file			--exec=file
+	-g			--gen-pot
+	-h			--help
+	-L [fatal]		--lint[=fatal]
+	-n			--non-decimal-data
+	-N			--use-lc-numeric
+	-O			--optimize
+	-p[file]		--profile[=file]
+	-P			--posix
+	-r			--re-interval
+	-S			--sandbox
+	-t			--lint-old
+	-V			--version
+
+To report bugs, see node `Bugs' in `gawk.info', which is
+section `Reporting Problems and Bugs' in the printed version.
+
+gawk is a pattern scanning and processing language.
+By default it reads standard input and writes standard output.
+
+Examples:
+	gawk '{ sum += $1 }; END { print sum }' file
+	gawk -F: '{ print $1 }' /etc/passwd
+	
+	
+```
+
+### 小练习
+
+1. Nginx的web服务器日志 access log文件，需要从统计日志中统计有哪些类型的设备终端和浏览器访问了该网站
+
+   ````shell
+   #1. 先解析出来所有的 user-agent
+   # 处理该文件的每一行，指定 " 为分隔符，只输出第6个文本域
+   cat /www/wwwlogs/local.web.access.log | awk -F \" '{print $6}' > ua.txt  
+   
+   ```
+   Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 8 Build/PKQ1.180729.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.8.9.1069 Mobi
+   le Safari/537.36
+   Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 8 Build/PKQ1.180729.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.8.9.1069 Mobi
+   le Safari/537.36
+   Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 8 Build/PKQ1.180729.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.8.9.1069 Mobi
+   le Safari/537.36
+   Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 8 Build/PKQ1.180729.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.8.9.1069 Mobi
+   le Safari/537.36
+   Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 8 Build/PKQ1.180729.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.8.9.1069 Mobi
+   le Safari/537.36
+   Mozilla/5.0 (Linux; U; Android 9; zh-CN; MI 8 Build/PKQ1.180729.001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.108 UCBrowser/12.8.9.1069 Mobi
+   le Safari/537.36
+   Dalvik/2.1.0 (Linux; U; Android 9.0; ZTE BA520 Build/MRA58K)
+   ```
+   
+   #2. 将user-agent 做唯一值处理
+   sort ua.txt | uniq -u > ua1.txt
+   
+   # 也可以直接通过管道命令：
+   cat  /www/wwwlogs/local.web.access.log| awk -F \" '{print $6}' | sort | uniq -c | sort -nr
+   ````
+
+   
 
 # ELK
 

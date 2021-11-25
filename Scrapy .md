@@ -200,6 +200,24 @@ class Ruan8Spider(scrapy.Spider):
 
 
 
+## 扩展
+
+### scrapy-fake-useragent
+
+参考：https://github.com/alecxe/scrapy-fake-useragent
+
+```shell
+pip install scrapy-fake-useragent
+```
+
+### Scrapy-Redis
+
+### *scrapy*-*redis*-bloomfilter
+
+https://github.com/Python3WebSpider/ScrapyRedisBloomFilter
+
+
+
 ## 命令行
 
 ### scrapy tools
