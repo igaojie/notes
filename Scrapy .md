@@ -317,7 +317,7 @@ re.match 尝试从字符串的起始位置匹配一个模式，如果不是起�
 ```python
 re.match(pattern, string, flags=0)
 flags :
-  re.I # 大小写不明白
+  re.I # 大小写不区分
   re.L
   re.M # 多行匹配，影响 ^ 和 $
   re.S # 使 . 匹配包括换行在内的所有字符
