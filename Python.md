@@ -171,6 +171,23 @@ Executing transaction: done
 conda activate py3-8
 ```
 
+# 进制转换
+
+```python
+# 进制转换
+v1 = bin(25) # 十进制转成二进制
+v2 = oct(25) # 十进制转成八进制
+v3 = hex(25) # 十进制转成十六进制
+
+print(v1, v2, v3) # 0b11001 0o31 0x19 字符串
+
+v1 = int("0b11001", base=2) # 二进制转十进制
+v2 = int("0o31", base=8) # 八进制转十进制
+v3 = int("0x19", base=16) # 十六进制转十进制
+print(v1, v2, v3) # 25 25 25
+
+```
+
 
 
 # 控制语句
