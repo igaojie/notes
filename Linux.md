@@ -265,3 +265,16 @@ GATEWAY=192.168.1.1
 service network restart 
 ```
 
+
+
+# BT
+
+## 安装
+
+参考文档：https://www.bt.cn/bbs/thread-19376-1-1.html
+
+```shell
+# yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_6.0.sh && sh install.sh
+
+```
+

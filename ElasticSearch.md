@@ -1,6 +1,380 @@
 # 安装
 
+## docker 安装
+
+### 安装
+
+````shell
+# pull 镜像
+> docker pull docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+
+```
+7.15.2: Pulling from elasticsearch/elasticsearch
+009c11f4ddee: Pull complete
+8772b99d888d: Pull complete
+bd8b744bf3bf: Pull complete
+2a41be2c565a: Pull complete
+e7e9200dd33e: Pull complete
+Digest: sha256:a1dce08d504b22e87adc849c94dcae53f6a0bd12648a4d99d7f9fc07bb2e8a3e
+Status: Downloaded newer image for docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+```
+
+# 启动 es 服务
+> docker run -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+````
+
+### 校验
+
+```shell
+docker exec -it 95ac431a5b87ae109bf04dfe8f3adbcede8a7209212eb7bedba85a4e092bc9d7 /bin/sh
+
+sh-4.4# curl -X GET "localhost:9200/?pretty"
+{
+  "name" : "95ac431a5b87",
+  "cluster_name" : "docker-cluster",
+  "cluster_uuid" : "ny4n5hrzQpS5ozYO6RhQHA",
+  "version" : {
+    "number" : "7.15.2",
+    "build_flavor" : "default",
+    "build_type" : "docker",
+    "build_hash" : "93d5a7f6192e8a1a12e154a2b81bf6fa7309da0c",
+    "build_date" : "2021-11-04T14:04:42.515624022Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.9.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+
+# ok 安装完成 可以继续了。
+```
+
+
+
 # 安全
+
+## SQL
+
+https://www.elastic.co/guide/en/elasticsearch/reference/master/sql-cli.html
+
+```shell
+> cd /usr/share/elasticsearch/bin/
+# ./elasticsearch-sql-cli http://用户名：密码@host:port
+> ./elasticsearch-sql-cli http://sql_user:strongpassword@192.168.1.174:9200 
+
+WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impact performance.
+                       asticElasticE
+                     ElasticE  sticEla
+          sticEl  ticEl            Elast
+        lasti Elasti                   tic
+      cEl       ast                     icE
+     icE        as                       cEl
+     icE        as                       cEl
+     icEla     las                        El
+   sticElasticElast                     icElas
+ las           last                    ticElast
+El              asti                 asti    stic
+El              asticEla           Elas        icE
+El            Elas  cElasticE   ticEl           cE
+Ela        ticEl         ticElasti              cE
+ las     astic               last              icE
+   sticElas                   asti           stic
+     icEl                      sticElasticElast
+     icE                       sticE   ticEla
+     icE                       sti       cEla
+     icEl                      sti        Ela
+      cEl                      sti       cEl
+       Ela                    astic    ticE
+         asti               ElasticElasti
+           ticElasti  lasticElas
+              ElasticElast
+
+                       SQL
+                      7.15.0
+
+sql>
+
+
+
+```
+
+### show tables
+
+```shell
+
+# sql> show tables; 列出所有的索引库 
+sql> show tables;
+               name                |     type      |     kind
+-----------------------------------+---------------+---------------
+.apm-agent-configuration           |TABLE          |INDEX
+.apm-custom-link                   |TABLE          |INDEX
+.async-search                      |TABLE          |INDEX
+.kibana                            |VIEW           |ALIAS
+.kibana-event-log-7.14.1           |VIEW           |ALIAS
+.kibana-event-log-7.14.1-000001    |TABLE          |INDEX
+.kibana-event-log-7.14.1-000002    |TABLE          |INDEX
+.kibana-event-log-7.14.1-000003    |TABLE          |INDEX
+.kibana_7.14.1                     |VIEW           |ALIAS
+.kibana_7.14.1_001                 |TABLE          |INDEX
+.kibana_task_manager               |VIEW           |ALIAS
+.kibana_task_manager_7.14.1        |VIEW           |ALIAS
+.kibana_task_manager_7.14.1_001    |TABLE          |INDEX
+.monitoring-alerts-7               |TABLE          |INDEX
+.monitoring-es-7-2021.11.20        |TABLE          |INDEX
+.monitoring-es-7-2021.11.21        |TABLE          |INDEX
+.monitoring-es-7-2021.11.22        |TABLE          |INDEX
+.monitoring-es-7-2021.11.23        |TABLE          |INDEX
+.monitoring-es-7-2021.11.24        |TABLE          |INDEX
+.monitoring-es-7-2021.11.25        |TABLE          |INDEX
+.monitoring-es-7-2021.11.26        |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.20    |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.21    |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.22    |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.23    |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.24    |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.25    |TABLE          |INDEX
+.monitoring-kibana-7-2021.11.26    |TABLE          |INDEX
+.tasks                             |TABLE          |INDEX
+.triggered_watches                 |TABLE          |INDEX
+.watches                           |TABLE          |INDEX
+article_post                       |TABLE          |INDEX
+filebeat-7.14.1                    |VIEW           |ALIAS
+filebeat-7.14.1-2021.09.11-000001  |TABLE          |INDEX
+filebeat-7.14.1-2021.10.11-000002  |TABLE          |INDEX
+filebeat-7.14.1-2021.11.10-000003  |TABLE          |INDEX
+filebeat-7.15.0                    |VIEW           |ALIAS
+filebeat-7.15.0-2021.10.11-000001  |TABLE          |INDEX
+filebeat-7.15.0-2021.11.10-000002  |TABLE          |INDEX
+index                              |TABLE          |INDEX
+metricbeat-7.14.1                  |VIEW           |ALIAS
+metricbeat-7.14.1-2021.09.17-000001|TABLE          |INDEX
+metricbeat-7.14.1-2021.10.17-000002|TABLE          |INDEX
+metricbeat-7.14.1-2021.11.16-000003|TABLE          |INDEX
+metricbeat-7.15.0                  |VIEW           |ALIAS
+metricbeat-7.15.0-2021.11.17-000001|TABLE          |INDEX
+
+sql>
+```
+
+### show functions
+
+```shell
+sql> SHOW FUNCTIONS;
+      name       |     type
+-----------------+---------------
+AVG              |AGGREGATE
+COUNT            |AGGREGATE
+FIRST            |AGGREGATE
+FIRST_VALUE      |AGGREGATE
+LAST             |AGGREGATE
+LAST_VALUE       |AGGREGATE
+MAX              |AGGREGATE
+MIN              |AGGREGATE
+SUM              |AGGREGATE
+KURTOSIS         |AGGREGATE
+MAD              |AGGREGATE
+PERCENTILE       |AGGREGATE
+PERCENTILE_RANK  |AGGREGATE
+SKEWNESS         |AGGREGATE
+STDDEV_POP       |AGGREGATE
+STDDEV_SAMP      |AGGREGATE
+SUM_OF_SQUARES   |AGGREGATE
+VAR_POP          |AGGREGATE
+VAR_SAMP         |AGGREGATE
+HISTOGRAM        |GROUPING
+CASE             |CONDITIONAL
+COALESCE         |CONDITIONAL
+GREATEST         |CONDITIONAL
+IFNULL           |CONDITIONAL
+IIF              |CONDITIONAL
+ISNULL           |CONDITIONAL
+LEAST            |CONDITIONAL
+NULLIF           |CONDITIONAL
+NVL              |CONDITIONAL
+CURDATE          |SCALAR
+CURRENT_DATE     |SCALAR
+CURRENT_TIME     |SCALAR
+CURRENT_TIMESTAMP|SCALAR
+CURTIME          |SCALAR
+DATEADD          |SCALAR
+DATEDIFF         |SCALAR
+DATEPART         |SCALAR
+DATETIME_FORMAT  |SCALAR
+DATETIME_PARSE   |SCALAR
+DATETRUNC        |SCALAR
+DATE_ADD         |SCALAR
+DATE_DIFF        |SCALAR
+DATE_PARSE       |SCALAR
+DATE_PART        |SCALAR
+DATE_TRUNC       |SCALAR
+DAY              |SCALAR
+DAYNAME          |SCALAR
+DAYOFMONTH       |SCALAR
+DAYOFWEEK        |SCALAR
+DAYOFYEAR        |SCALAR
+DAY_NAME         |SCALAR
+DAY_OF_MONTH     |SCALAR
+DAY_OF_WEEK      |SCALAR
+DAY_OF_YEAR      |SCALAR
+DOM              |SCALAR
+DOW              |SCALAR
+DOY              |SCALAR
+FORMAT           |SCALAR
+HOUR             |SCALAR
+HOUR_OF_DAY      |SCALAR
+IDOW             |SCALAR
+ISODAYOFWEEK     |SCALAR
+ISODOW           |SCALAR
+ISOWEEK          |SCALAR
+ISOWEEKOFYEAR    |SCALAR
+ISO_DAY_OF_WEEK  |SCALAR
+ISO_WEEK_OF_YEAR |SCALAR
+IW               |SCALAR
+IWOY             |SCALAR
+MINUTE           |SCALAR
+MINUTE_OF_DAY    |SCALAR
+MINUTE_OF_HOUR   |SCALAR
+MONTH            |SCALAR
+MONTHNAME        |SCALAR
+MONTH_NAME       |SCALAR
+MONTH_OF_YEAR    |SCALAR
+NOW              |SCALAR
+QUARTER          |SCALAR
+SECOND           |SCALAR
+SECOND_OF_MINUTE |SCALAR
+TIMESTAMPADD     |SCALAR
+TIMESTAMPDIFF    |SCALAR
+TIMESTAMP_ADD    |SCALAR
+TIMESTAMP_DIFF   |SCALAR
+TIME_PARSE       |SCALAR
+TODAY            |SCALAR
+TO_CHAR          |SCALAR
+WEEK             |SCALAR
+WEEK_OF_YEAR     |SCALAR
+YEAR             |SCALAR
+ABS              |SCALAR
+ACOS             |SCALAR
+ASIN             |SCALAR
+ATAN             |SCALAR
+ATAN2            |SCALAR
+CBRT             |SCALAR
+CEIL             |SCALAR
+CEILING          |SCALAR
+COS              |SCALAR
+COSH             |SCALAR
+COT              |SCALAR
+DEGREES          |SCALAR
+E                |SCALAR
+EXP              |SCALAR
+EXPM1            |SCALAR
+FLOOR            |SCALAR
+LOG              |SCALAR
+LOG10            |SCALAR
+MOD              |SCALAR
+PI               |SCALAR
+POWER            |SCALAR
+RADIANS          |SCALAR
+RAND             |SCALAR
+RANDOM           |SCALAR
+ROUND            |SCALAR
+SIGN             |SCALAR
+SIGNUM           |SCALAR
+SIN              |SCALAR
+SINH             |SCALAR
+SQRT             |SCALAR
+TAN              |SCALAR
+TRUNC            |SCALAR
+TRUNCATE         |SCALAR
+ASCII            |SCALAR
+BIT_LENGTH       |SCALAR
+CHAR             |SCALAR
+CHARACTER_LENGTH |SCALAR
+CHAR_LENGTH      |SCALAR
+CONCAT           |SCALAR
+INSERT           |SCALAR
+LCASE            |SCALAR
+LEFT             |SCALAR
+LENGTH           |SCALAR
+LOCATE           |SCALAR
+LTRIM            |SCALAR
+OCTET_LENGTH     |SCALAR
+POSITION         |SCALAR
+REPEAT           |SCALAR
+REPLACE          |SCALAR
+RIGHT            |SCALAR
+RTRIM            |SCALAR
+SPACE            |SCALAR
+STARTS_WITH      |SCALAR
+SUBSTRING        |SCALAR
+TRIM             |SCALAR
+UCASE            |SCALAR
+CAST             |SCALAR
+CONVERT          |SCALAR
+DATABASE         |SCALAR
+USER             |SCALAR
+ST_ASTEXT        |SCALAR
+ST_ASWKT         |SCALAR
+ST_DISTANCE      |SCALAR
+ST_GEOMETRYTYPE  |SCALAR
+ST_GEOMFROMTEXT  |SCALAR
+ST_WKTTOSQL      |SCALAR
+ST_X             |SCALAR
+ST_Y             |SCALAR
+ST_Z             |SCALAR
+SCORE            |SCORE
+
+sql>
+
+sql>
+   |
+   | SHOW FUNCTIONS LIKE 'ABS';
+     name      |     type
+---------------+---------------
+ABS            |SCALAR
+```
+
+
+
+### SELECT
+
+https://www.elastic.co/guide/en/elasticsearch/reference/master/sql-syntax-select.html
+
+```shell
+# select 语句 ，类似SQL
+sql> select postid, title, subtitle, platform, mid  from article_post limit 1;
+    
+    postid     |       title        |   subtitle    |   platform    |      mid
+---------------+--------------------+---------------+---------------+---------------
+117606         |6TY Shades of Beauty|               |1              |0
+```
+
+### DESCRIBE
+
+```shell
+sql>
+   |
+   | describe article_post;  # desc article_post;
+     column      |     type      |    mapping
+-----------------+---------------+---------------
+content          |VARCHAR        |text
+desc             |VARCHAR        |text
+mid              |TINYINT        |byte
+platform         |TINYINT        |byte
+postid           |INTEGER        |integer
+subtitle         |VARCHAR        |text
+subtitle:        |VARCHAR        |text
+subtitle:.keyword|VARCHAR        |keyword
+title            |VARCHAR        |text
+versionContent   |VARCHAR        |text
+
+
+
+sql>
+   |
+   | describe "filebeat-*"
+```
 
 
 

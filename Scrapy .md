@@ -570,6 +570,74 @@ print(time.time() - start)
 
 
 
+# Crawlab 
+
+Crawlab 分布式爬虫管理平台 https://docs.crawlab.cn/zh/QuickStart/
+
+## docker 方式安装
+
+1. 新建 docker-compose.yml 文件：
+
+```yaml
+version: '3.3'
+services:
+  master:
+    image: tikazyq/crawlab:latest
+    container_name: crawlab-master
+    environment:
+      SCRAPY_ENV: "PRO"
+      CRAWLAB_SERVER_MASTER: "Y"
+      CRAWLAB_MONGO_HOST: "mongo"
+      CRAWLAB_REDIS_ADDRESS: "redis"
+    ports:
+      - "8080:8080" # frontend
+      - "8000:8000" # backend
+    sysctls:
+      - net.ipv4.ip_forward=1
+    depends_on:
+      - mongo
+      - redis
+  worker01:
+    image: tikazyq/crawlab:latest
+    container_name: crawlab-worker-01
+    environment:
+      SCRAPY_ENV: "PRO"
+      CRAWLAB_SERVER_MASTER: "N"
+      CRAWLAB_MONGO_HOST: "mongo"
+      CRAWLAB_REDIS_ADDRESS: "redis"
+    depends_on:
+      - mongo
+      - redis
+  worker02:
+    image: tikazyq/crawlab:latest
+    container_name: crawlab-worker-02
+    environment:
+      SCRAPY_ENV: "PRO"
+      CRAWLAB_SERVER_MASTER: "N"
+      CRAWLAB_MONGO_HOST: "mongo"
+      CRAWLAB_REDIS_ADDRESS: "redis"
+    depends_on:
+      - mongo
+      - redis
+  mongo:
+    image: mongo:4.4.10
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data2/www/wwwroot/crawlab/mongo/db:/data/db
+      - /data2/www/wwwroot/crawlab/mongo/log:/var/log/mongodb
+      - /data2/www/wwwroot/crawlab/mongo/config:/etc/mongo
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+
+```
+
+2. docker-compose up -d 
+
 
 
 # 斐波那契数列

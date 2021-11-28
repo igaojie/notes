@@ -91,6 +91,88 @@ zope.interface @ file:///opt/concourse/worker/volumes/live/e2e9977a-a3b7-4323-6e
 
 5. ss
 
+   
+
+# Conda
+
+https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
+
+## 创建环境
+
+```shell
+conda create -n py3-8 python=3.8
+Collecting package metadata (current_repodata.json): done
+Solving environment: done
+
+## Package Plan ##
+
+  environment location: /Users/shaogaojie/opt/anaconda3/envs/py3-8
+
+  added / updated specs:
+    - python=3.8
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    certifi-2021.10.8          |   py38hecd8cb5_0         151 KB
+    ncurses-6.3                |       hca72f7f_2         856 KB
+    pip-21.2.4                 |   py38hecd8cb5_0         1.8 MB
+    python-3.8.12              |       h88f2d9e_0        10.3 MB
+    setuptools-58.0.4          |   py38hecd8cb5_0         791 KB
+    ------------------------------------------------------------
+                                           Total:        13.9 MB
+
+The following NEW packages will be INSTALLED:
+
+  ca-certificates    pkgs/main/osx-64::ca-certificates-2021.10.26-hecd8cb5_2
+  certifi            pkgs/main/osx-64::certifi-2021.10.8-py38hecd8cb5_0
+  libcxx             pkgs/main/osx-64::libcxx-12.0.0-h2f01273_0
+  libffi             pkgs/main/osx-64::libffi-3.3-hb1e8313_2
+  ncurses            pkgs/main/osx-64::ncurses-6.3-hca72f7f_2
+  openssl            pkgs/main/osx-64::openssl-1.1.1l-h9ed2024_0
+  pip                pkgs/main/osx-64::pip-21.2.4-py38hecd8cb5_0
+  python             pkgs/main/osx-64::python-3.8.12-h88f2d9e_0
+  readline           pkgs/main/osx-64::readline-8.1-h9ed2024_0
+  setuptools         pkgs/main/osx-64::setuptools-58.0.4-py38hecd8cb5_0
+  sqlite             pkgs/main/osx-64::sqlite-3.36.0-hce871da_0
+  tk                 pkgs/main/osx-64::tk-8.6.11-h7bc2e8c_0
+  wheel              pkgs/main/noarch::wheel-0.37.0-pyhd3eb1b0_1
+  xz                 pkgs/main/osx-64::xz-5.2.5-h1de35cc_0
+  zlib               pkgs/main/osx-64::zlib-1.2.11-h1de35cc_3
+
+
+Proceed ([y]/n)? y
+
+
+Downloading and Extracting Packages
+python-3.8.12        | 10.3 MB   | ################################################################################################ | 100%
+ncurses-6.3          | 856 KB    | ################################################################################################ | 100%
+pip-21.2.4           | 1.8 MB    | ################################################################################################ | 100%
+certifi-2021.10.8    | 151 KB    | ################################################################################################ | 100%
+setuptools-58.0.4    | 791 KB    | ################################################################################################ | 100%
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+#
+# To activate this environment, use
+#
+#     $ conda activate py3-8
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+```
+
+## 激活环境
+
+```shell
+conda activate py3-8
+```
+
+
+
 # 控制语句
 
 ## 三元运算符 *
@@ -111,6 +193,78 @@ print(h)
 
 
 # 数据结构
+
+## 字符串
+
+% 格式化
+
+```python
+str_tpl = "大家好，我是%s,欢迎来到%s"
+str = str_tpl % ("张三00", "我的世界")
+print(str)
+
+str_tpl = "大家好，我是%(name)s,欢迎来到%(place)s"
+
+str = str_tpl % {"name":"张三01","place":"我的世界"}
+print(str)
+
+# 用两个百分号 输出 %
+str_tpl = "大家好，我是%s, 今天的课程已经讲了90%%了"
+str = str_tpl % ("张三04")
+print(str)
+```
+
+format 格式化（推荐）
+
+```python
+str_tpl = "大家好，我是{0},欢迎来到{1}"
+
+str = str_tpl .format("张三02", "我的世界")
+print(str)
+
+str_tpl = "大家好，我是{name},欢迎来到{place}"
+str = str_tpl .format(name = "张三03", place = "我的世界")
+print(str)
+```
+
+f 格式化(Python 3.6开始)
+
+```python
+name = "张三"
+place = "我的世界"
+str = f"大家好，我是{name},欢迎来到{place}" # 大家好，我是张三,欢迎来到我的世界
+print(str)
+
+str = f"大家好，我是{name},欢迎来到{place},我的等级是{9+2}" # 大家好，我是张三,欢迎来到我的世界,我的等级是11
+print(str)
+
+# 3.8 开始
+str = f"大家好，我是{name},欢迎来到{place},我的等级是{9+2=}" # 大家好，我是张三,欢迎来到我的世界,我的等级是9+2=11
+print(str)
+# 3.7 版本会报错。
+#  File "<fstring>", line 1
+#    (9+2=)
+#        ^
+#SyntaxError: invalid syntax
+
+str = f"我今年{22}岁"
+print(str)
+
+str = f"我今年{22:#b}岁"
+print(str)
+
+str = f"我今年{22:#o}岁"
+print(str)
+
+str = f"我今年{22:#x}岁"
+print(str)
+
+name = "sophia"
+str = f"我叫{name.upper()}"
+print(str)
+```
+
+
 
 ## List 
 
