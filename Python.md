@@ -192,7 +192,7 @@ print(v1, v2, v3) # 25 25 25
 
 # 控制语句
 
-## 三元运算符 *
+## 三元运算符 
 
 python中没有其他语言中的三元表达式，不过有类似的实现方法。
 
@@ -211,7 +211,35 @@ print(h)
 
 # 数据结构
 
+## 整型
+
+Python 2 ： 整型 长整型
+
+Python3 : 整型（无限制大小）
+
+```python
+# Python3
+v1 = 9 / 2
+print(v1) #4.5 
+
+
+# Python2
+v1 = 9 / 2
+print(v1) # 4
+
+from __future__ import division
+print(v1) # 4.5
+```
+
+
+
+## bool 
+
+***整数0、空字符串、空列表、空元组、空字典 转换为bool类型均为False, 其他均为True***
+
 ## 字符串
+
+### 格式化
 
 % 格式化
 
@@ -281,7 +309,112 @@ str = f"我叫{name.upper()}"
 print(str)
 ```
 
+### 常用函数
 
+- strip() 去除字符串两边的空格、换行、制表符和指定字符
+
+  ```python
+  str = "   Hello, aaa    "
+  print(str.strip())
+  print(str.lstrip())
+  print(str.rstrip()) 
+  
+  str = "bb   Hello, aaa    bb"
+  print(str.strip("b"))
+  print(str.lstrip("b"))
+  print(str.rstrip("b"))
+  ```
+
+  
+
+- upper() 大写
+
+  ```python
+  str = "   Hello, aaa    "
+  print(str.upper()) #    HELLO, AAA 
+  ```
+
+  
+
+- lower() 小写
+
+- startswith()
+
+- endswith()
+
+  ```python
+  str = "中华人民共和国"
+  
+  print(str.startswith("中国")) # False
+  print(str.endswith("国")) # True
+  ```
+
+  
+
+- isdecimal()
+
+- isdigit()
+
+  ```python
+  v1 = "1"
+  v2 = "①"
+  print(v1.isdecimal())  #True
+  print(v2.isdecimal()) #False
+  
+  print(v1.isdigit()) # True
+  print(v2.isdigit()) # True
+  ```
+
+- replace()
+
+- split()  rsplit()  lsplit()
+
+- join()
+
+- encode()
+
+- center()
+
+- ljust()
+
+- rjust()
+
+  ```python
+  
+  str = "老张"
+  print(str.center(20, "*")) # *********老张*********
+  print(str.ljust(20,"*")) # 老张******************
+  print(str.rjust(20, "*")) # ******************老张
+  ```
+
+- zfill()
+
+- len
+
+  ```python
+  str = "中华人共和国"
+  index = 0
+  while index < len(str):
+      print(str[index])
+      index += 1
+  
+  index = len(str) - 1
+  while index >= 0:
+      print(str[index])
+      index -= 1
+      
+  str = "中华人共和国"
+  print(str[0:2]) # 中华
+  print(str[2:3]) # 人
+  print(str[:3]) # 中华人
+  print(str[2:])     # 人共和国
+  ```
+
+  
+
+- 11
+
+- 
 
 ## List 
 
@@ -301,10 +434,22 @@ sentence = ['this', 'is', 'a', 'sentence']
 
 ### del
 
+### 常见问题
 
+1. List index out of range
 
 ```python
+# 1. 通过捕获异常进行处理
+try:
+    gotdata = dlist[1]
+except IndexError:
+    gotdata = 'null'
+    
+# 1.1 
+gotdata = dlist[1] if len(dlist) > 1 else 'null'
 
+# 2. 判断长度
+len(dlist)
 ```
 
 ## Dict
@@ -323,6 +468,10 @@ del item['Name'] # 删除 键 为 Name 的条目
 
 del item # 删除字典
 ```
+
+
+
+### 常见问题
 
 
 
@@ -560,6 +709,123 @@ func5 = 0.00157338432678  % formatting
 
 itertools - 为高效循环而创建迭代器的函数.
 
+# 协程
+
+## 协程
+
+协程Coroutine ，也可以成为微线程，是一种用户态内的上下文切换技术，其实就是通过一个线程来实现代码块的相互切换执行。
+
+实现协程的方法：
+
+- greenlet ，早期模块
+
+  ```shell
+  pip install greenlet
+  ```
+
+  ```python
+  from greenlet import greenlet
+  def func1():
+      print(1)        # 第1步：输出 1
+      gr2.switch()    # 第3步：切换到 func2 函数
+      print(2)        # 第6步：输出 2
+      gr2.switch()    # 第7步：切换到 func2 函数，从上一次执行的位置继续向后执行
+  def func2():
+      print(3)        # 第4步：输出 3
+      gr1.switch()    # 第5步：切换到 func1 函数，从上一次执行的位置继续向后执行
+      print(4)        # 第8步：输出 4
+  gr1 = greenlet(func1)
+  gr2 = greenlet(func2)
+  gr1.switch() # 第1步：去执行 func1 函数
+  
+  # 输出结果
+  1
+  3
+  2
+  4
+  ```
+
+  
+
+- yield 关键字
+
+  ```python
+  def func1():
+      yield 1
+      yield from func2()
+      yield 2
+  def func2():
+      yield 3
+      yield 4
+  f1 = func1()
+  for item in f1:
+      print(item)
+      
+      
+  # 输出结果 
+  1
+  3
+  4
+  2
+  ```
+
+  
+
+- asyncio 装饰器(py3.4开始)
+
+  ```python
+  import asyncio
+  @asyncio.coroutine
+  def func1():
+      print(1)
+      yield from asyncio.sleep(2)  # 遇到IO耗时操作，自动化切换到tasks中的其他任务
+      print(2)
+  @asyncio.coroutine
+  def func2():
+      print(3)
+      yield from asyncio.sleep(2) # 遇到IO耗时操作，自动化切换到tasks中的其他任务
+      print(4)
+  tasks = [
+      asyncio.ensure_future( func1() ),
+      asyncio.ensure_future( func2() )
+  ]
+  loop = asyncio.get_event_loop()
+  loop.run_until_complete(asyncio.wait(tasks))
+  # 输出结果
+  1
+  3
+  2
+  4
+  ```
+
+  
+
+- async 、 awati 关键字(py3.5)【推荐】
+
+  ```python
+  import asyncio
+  async def func1():
+      print(1)
+      await asyncio.sleep(2)
+      print(2)
+  async def func2():
+      print(3)
+      await asyncio.sleep(2)
+      print(4)
+  tasks = [
+      asyncio.ensure_future(func1()),
+      asyncio.ensure_future(func2())
+  ]
+  loop = asyncio.get_event_loop()
+  loop.run_until_complete(asyncio.wait(tasks))
+  ```
+
+  
+
+
+
+## asyncio
+
 
 
 # 框架
@@ -626,6 +892,14 @@ python test/flask_server.py
 ## execjs
 
 ## HTTPConnection
+
+## openpyxl
+
+## requests
+
+## json
+
+## aiohttp
 
 
 
