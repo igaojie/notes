@@ -822,9 +822,107 @@ itertools - 为高效循环而创建迭代器的函数.
 
   
 
+### 意义
+
+在一个线程中如果遇到IO等待时间，线程利用空闲的时间去做其他的事情。
+
+案例：下载图片操作
+
+1. 普通下载
+
+   ```python
+   import requests
+   
+   def download_image(url):
+       print("开始下载：", url)
+   
+       # 发送网络请求，下载图片
+       response = requests.get(url)
+   
+       print("下载完成")
+   
+       file_name = url.split('/')[-1]
+       with open(file_name, 'wb') as file_object:
+           file_object.write(response.content)
+   
+   if __name__ == '__main__':
+       url_list = [
+           'https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/0E/0D/ChMkJ1qvcx-IB-G0AATBmHgSJFAAAm2FAKRj-0ABMGw890.jpg',
+           'https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/00/0C/ChMkJlqmDO6IX0eNAAGcgNz9RogAAl9vAFvKfYAAZyY922.png',
+           'https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/03/04/ChMkJlqctLeIbDnKAAiz5YwC21YAAlHygGOfvgACLP9805.jpg'
+       ]   
+   
+       for item in url_list:
+           download_image(item)     
+           
+    
+   
+   """
+   开始下载： https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/0E/0D/ChMkJ1qvcx-IB-G0AATBmHgSJFAAAm2FAKRj-0ABMGw890.jpg
+   下载完成
+   开始下载： https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/00/0C/ChMkJlqmDO6IX0eNAAGcgNz9RogAAl9vAFvKfYAAZyY922.png
+   下载完成
+   开始下载： https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/03/04/ChMkJlqctLeIbDnKAAiz5YwC21YAAlHygGOfvgACLP9805.jpg
+   下载完成
+   """
+   ```
+
+   
+
+2. 协程方式下载
+
+   ```python
+   import aiohttp  # pip install aiohttp
+   import asyncio
+   
+   async def fetch(session, url):
+       print("发送请求：", url)
+       async with session.get(url, verify_ssl = False) as response:
+           content = await response.content.read()
+           print("下载完成")
+           file_name = url.split('/')[-1]
+           with open(file_name, 'wb') as file_object:
+               file_object.write(content)
+   
+   async def main():
+       async with aiohttp.ClientSession() as session:
+           url_list = [
+               'https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/0E/0D/ChMkJ1qvcx-IB-G0AATBmHgSJFAAAm2FAKRj-0ABMGw890.jpg',
+               'https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/00/0C/ChMkJlqmDO6IX0eNAAGcgNz9RogAAl9vAFvKfYAAZyY922.png',
+               'https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/03/04/ChMkJlqctLeIbDnKAAiz5YwC21YAAlHygGOfvgACLP9805.jpg'
+           ]   
+   
+           tasks = [
+               asyncio.create_task(fetch(session, url)) for url in url_list
+           ]
+           await asyncio.wait(tasks)
+   
+   if __name__ == '__main__':
+       asyncio.run(main())
+       
+       
+       
+    """
+    发送请求： https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/0E/0D/ChMkJ1qvcx-IB-G0AATBmHgSJFAAAm2FAKRj-0ABMGw890.jpg
+   发送请求： https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/00/0C/ChMkJlqmDO6IX0eNAAGcgNz9RogAAl9vAFvKfYAAZyY922.png
+   发送请求： https://xiaohua-fd.zol-img.com.cn/t_s300x2000/g5/M00/03/04/ChMkJlqctLeIbDnKAAiz5YwC21YAAlHygGOfvgACLP9805.jpg
+   下载完成
+   下载完成
+   下载完成
+    
+    """   
+   ```
+
+   上述两种的执行对比之后会发现，`基于协程的异步编程` 要比 `同步编程`的效率高了很多。因为：
+
+   - 同步编程，按照顺序逐一排队执行，如果图片下载时间为2分钟，那么全部执行完则需要6分钟。
+   - 异步编程，几乎同时发出了3个下载任务的请求（遇到IO请求自动切换去发送其他任务请求），如果图片下载时间为2分钟，那么全部执行完毕也大概需要2分钟左右就可以了。
+
+## 异步编程
+
+### 事件循环
 
 
-## asyncio
 
 
 
