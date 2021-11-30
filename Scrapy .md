@@ -718,3 +718,17 @@ for n in fab(5):
     
 ```
 
+# 工具
+
+## curl2scrpay
+
+https://michael-shub.github.io/curl2scrapy/
+
+https://curlconverter.com/  Convert [curl](https://curl.se/docs/manual.html) commands to Python, JavaScript, PHP, R, Go, Rust, Elixir, Java, MATLAB, Ansible URI, Strest, Dart or JSON。
+
+
+
+# 学习资料
+
+1. https://python3webspider.cuiqingcai.com/ 《Python3网络爬虫开发实战》 - 崔庆才
+2. 

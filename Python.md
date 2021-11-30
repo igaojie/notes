@@ -97,6 +97,68 @@ zope.interface @ file:///opt/concourse/worker/volumes/live/e2e9977a-a3b7-4323-6e
 
 https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 
+## Centos 安装
+
+```shell
+# 1. 下载安装命令
+wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
+ 
+# 2. 执行安装程序
+bash Anaconda3-2021.11-Linux-x86_64.sh
+
+"""
+Preparing transaction: done
+Executing transaction: -
+
+    Installed package of scikit-learn can be accelerated using scikit-learn-intelex.
+    More details are available here: https://intel.github.io/scikit-learn-intelex
+
+    For example:
+
+        $ conda install scikit-learn-intelex
+        $ python -m sklearnex my_application.py
+
+
+
+done
+installation finished.
+Do you wish the installer to initialize Anaconda3
+by running conda init? [yes|no]
+[no] >>>
+You have chosen to not have conda modify your shell scripts at all.
+To activate conda's base environment in your current shell session:
+
+##### 加入环境变量
+eval "$(/root/anaconda3/bin/conda shell.YOUR_SHELL_NAME hook)"
+
+To install conda's shell functions for easier access, first activate, then:
+
+conda init
+
+If you'd prefer that conda's base environment not be activated on startup,
+   set the auto_activate_base parameter to false:
+
+conda config --set auto_activate_base false
+
+##### 安装完成
+Thank you for installing Anaconda3!
+
+===========================================================================
+
+Working with Python and Jupyter notebooks is a breeze with PyCharm Pro,
+designed to be used with Anaconda. Download now and have the best data
+tools at your fingertips.
+
+PyCharm Pro for Anaconda is available at: https://www.anaconda.com/pycharm
+"""
+```
+
+
+
+### Mac 安装
+
+
+
 ## 创建环境
 
 ```shell
@@ -106,7 +168,7 @@ Solving environment: done
 
 ## Package Plan ##
 
-  environment location: /Users/shaogaojie/opt/anaconda3/envs/py3-8
+  environment location: /Users/xxxx/opt/anaconda3/envs/py3-8
 
   added / updated specs:
     - python=3.8
@@ -425,6 +487,17 @@ aList = [123, 'xyz', 'zara', 'abc']; # 声明一个列表
 aList.append( 2009 ); # 追加一个元素
 ```
 
+### 相加
+
+```python
+l1 = [1,2,3]
+l2 = [2,5, 6]
+
+print(l1 + l2)
+
+#[1, 2, 3, 2, 5, 6]
+```
+
 ### join
 
 ```python
@@ -454,7 +527,24 @@ len(dlist)
 
 ## Dict
 
-### del
+### update()
+
+```python
+dict = {'Name': 'Zara', 'Age': "7", 'Class': 'First'}
+dict2 = {'Sex': 'female','Age': 10 } # 相同的键会直接替换成 update 的值
+
+dict.update(dict2)
+
+# Value : {'Name': 'Zara', 'Age': 10, 'Class': 'First', 'Sex': 'female'}
+```
+
+### values()
+
+### keys()
+
+
+
+### del()
 
 删除字典元素，能删单一的元素也能清空字典，清空只需一项操作。
 
@@ -467,6 +557,20 @@ dict.clear() # 清空字典所有条目
 del item['Name'] # 删除 键 为 Name 的条目
 
 del item # 删除字典
+```
+
+
+
+### map
+
+```python
+dict = {'Name': 'Zara', 'Age': "7", 'Class': 'First'}
+dd = map(lambda x: x.lower(), dict.values())
+print(list(dd))
+
+ddd = map(lambda x: x.upper(), dict.keys())
+print(list(ddd))
+
 ```
 
 
