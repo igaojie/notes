@@ -99,6 +99,8 @@ https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environme
 
 ## Centos 安装
 
+安装文档：https://phoenixnap.com/kb/install-anaconda-on-centos-8
+
 ```shell
 # 1. 下载安装命令
 wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh

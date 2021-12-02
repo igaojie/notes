@@ -177,12 +177,50 @@ https://www.elastic.co/guide/en/kibana/7.9/alert-action-settings-kb.html#general
 
 # SSH免密登录
 
+
+
 SSH免密登录一般可以采用下面三种方式，看个人习惯。
 
 ## ① ssh-copy-id
 
 ```shell
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@xx.xx.xx.xx  # 然后输入对应的密码即可。
+
+# /usr/bin/ssh-copy-id: ERROR: failed to open ID file '/root/.ssh/id_rsa.pub': 没有那个文件或目录 需要生成文件
+
+(base) [root@localhost ~]# cd ~/.ssh/
+(base) [root@localhost .ssh]# ll
+总用量 4
+-rw-------. 1 root root 416 11月 24 17:27 authorized_keys
+(base) [root@localhost .ssh]#
+(base) [root@localhost .ssh]# ssh-keygen -o
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:IabxS8gmcE42LJ3gS2XrhAF1pH5XWGdRc8C6cpin8fk root@localhost
+The key's randomart image is:
++---[RSA 3072]----+
+|+o.+o   . +++..  |
+|.+=+.  o o  .o   |
+|o+Xo. + o  .     |
+|.O+o * o ..      |
+| .+.* + So .     |
+|   + o .= +      |
+|      .  B .     |
+|        . o      |
+|           .E    |
++----[SHA256]-----+
+(base) [root@localhost .ssh]# ll
+总用量 12
+-rw-------. 1 root root  416 11月 24 17:27 authorized_keys
+-rw-------. 1 root root 2602 12月  1 18:13 id_rsa
+-rw-r--r--. 1 root root  568 12月  1 18:13 id_rsa.pub
+
+
 ```
 
 ## ② scp

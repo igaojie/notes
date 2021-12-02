@@ -216,6 +216,95 @@ pip install scrapy-fake-useragent
 
 https://github.com/Python3WebSpider/ScrapyRedisBloomFilter
 
+#### 安装
+
+```shell
+1. pip install scrapy-redis-bloomfilter
+
+"""
+..........
+Successfully installed deprecated-1.2.13 redis-4.0.2 scrapy-redis-0.7.1 scrapy-redis-bloomfilter-0.8.1 wrapt-1.13.3
+安装完成
+"""
+```
+
+#### 配置
+
+```python
+2. setting.py 追加
+
+# Use this Scheduler, if your scrapy_redis version is <= 0.7.1
+SCHEDULER = "scrapy_redis_bloomfilter.scheduler.Scheduler"
+
+# Ensure all spiders share same duplicates filter through redis
+DUPEFILTER_CLASS = "scrapy_redis_bloomfilter.dupefilter.RFPDupeFilter"
+
+# Redis URL
+REDIS_URL = 'redis://localhost:6379'
+
+# Number of Hash Functions to use, defaults to 6
+BLOOMFILTER_HASH_NUMBER = 6
+
+# Redis Memory Bit of Bloom Filter Usage, 30 means 2^30 = 128MB, defaults to 30
+BLOOMFILTER_BIT = 10
+
+# Persist
+SCHEDULER_PERSIST = True
+```
+
+#### 其他
+
+```shell
+(py3-7) [root@localhost full]# redis-cli
+127.0.0.1:6379> keys *
+1) "zol:requests"
+2) "zol:bloomfilter"
+127.0.0.1:6379> zcard zol:requests
+(integer) 11123
+
+# 该值为0的时候 爬取完毕。
+127.0.0.1:6379> zcard zol:requests
+(integer) 0
+```
+
+```shell
+2021-12-02 11:10:49 [scrapy.core.engine] INFO: Closing spider (finished)
+2021-12-02 11:10:49 [scrapy.extensions.feedexport] INFO: Stored json feed (16389 items) in: zol1202.json
+2021-12-02 11:10:49 [scrapy.statscollectors] INFO: Dumping Scrapy stats:
+{'bloomfilter/filtered': 42, #过滤条数
+ 'downloader/request_bytes': 6231191,
+ 'downloader/request_count': 17243,
+ 'downloader/request_method_count/GET': 17243,
+ 'downloader/response_bytes': 157482876,
+ 'downloader/response_count': 17243,
+ 'downloader/response_status_count/200': 17231,
+ 'downloader/response_status_count/301': 1,
+ 'downloader/response_status_count/302': 1,
+ 'downloader/response_status_count/403': 9,
+ 'downloader/response_status_count/404': 1,
+ 'elapsed_time_seconds': 2417.790671,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2021, 12, 2, 3, 10, 49, 87217),
+ 'httperror/response_ignored_count': 10,
+ 'httperror/response_ignored_status_count/403': 9,
+ 'httperror/response_ignored_status_count/404': 1,
+ 'item_scraped_count': 16389,
+ 'log_count/DEBUG': 35323,
+ 'log_count/INFO': 65,
+ 'memusage/max': 129052672,
+ 'memusage/startup': 70402048,
+ 'request_depth_max': 101,
+ 'response_received_count': 17241,
+ 'scheduler/dequeued/redis': 17243,
+ 'scheduler/enqueued/redis': 17243,
+ 'start_time': datetime.datetime(2021, 12, 2, 2, 30, 31, 296546)}
+2021-12-02 11:10:49 [scrapy.core.engine] INFO: Spider closed (finished)
+```
+
+
+
+[海量数据处理算法Bloom Filter](https://www.bookstack.cn/read/piaosanlang-spiders/81823a91f0a28d5a.md)
+
 
 
 ## 命令行
