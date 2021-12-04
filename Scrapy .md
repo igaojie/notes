@@ -397,6 +397,47 @@ class ConfigSpider(scrapy.Spider):
 
 ```
 
+# Scrapyd
+
+## 简介
+
+Scrapyd 是一个运行 Scrapy 爬虫的服务程序，它提供一系列 HTTP 接口来帮助我们部署、启动、停止、删除爬虫程序。Scrapyd 支持版本管理，同时还可以管理多个爬虫任务，利用它我们可以非常方便地完成 Scrapy 爬虫项目的部署任务调度。
+
+https://scrapyd.readthedocs.io/en/stable/
+
+## 安装
+
+pip install scrapyd
+
+## 启动
+
+```shell
+# scrapyd
+
+ scrapyd
+2021-12-04T12:10:36+0800 [-] Loading /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages/scrapyd/txapp.py...
+2021-12-04T12:10:36+0800 [-] Scrapyd web console available at http://127.0.0.1:6800/
+2021-12-04T12:10:36+0800 [-] Loaded.
+2021-12-04T12:10:36+0800 [twisted.scripts._twistd_unix.UnixAppLogger#info] twistd 21.2.0 (/Users/shaogaojie/opt/anaconda3/envs/py3-7/bin/python 3.7.11) starting up.
+2021-12-04T12:10:36+0800 [twisted.scripts._twistd_unix.UnixAppLogger#info] reactor class: twisted.internet.selectreactor.SelectReactor.
+2021-12-04T12:10:36+0800 [-] Site starting on 6800
+2021-12-04T12:10:36+0800 [twisted.web.server.Site#info] Starting factory <twisted.web.server.Site object at 0x7f8010b2d890>
+2021-12-04T12:10:36+0800 [Launcher] Scrapyd 1.2.1 started: max_proc=64, runner='scrapyd.runner'
+
+```
+
+## 访问
+
+http://127.0.0.1:6800/
+
+```shell
+curl http://localhost:6800/schedule.json -d project=default -d spider=somespider
+{"node_name": "ShaodeMacBook-Pro.local", "status": "error", "message": "Scrapy 2.4.1 - no active project\n\nUnknown command: list\n\nUse \"scrapy\" to see available commands\n"}
+(py3-7)  shaogaojie@ShaodeMacBook-Pro  ~  
+```
+
+
+
 
 
 ## 扩展
@@ -569,6 +610,18 @@ scrapy shell https://www.ruan8.com/soft/65742.html
 ```
 
 ## XPATH
+
+### 文档
+
+英文文档：https://developer.mozilla.org/en-US/docs/Web/XPath/Functions
+
+中文文档：https://cloud.tencent.com/developer/chapter/17854 
+
+### 语法
+
+1. 层级： / 直接子级 //跳级
+2. 属性:  @ eg. @href  @src
+3. 函数 eg. position() contains() 
 
 ### 方法
 
@@ -1050,5 +1103,10 @@ https://curlconverter.com/  Convert [curl](https://curl.se/docs/manual.html) com
 
 # 学习资料
 
-1. https://python3webspider.cuiqingcai.com/ 《Python3网络爬虫开发实战》 - 崔庆才
+1. https://python3webspider.cuiqingcai.com/ [《Python3网络爬虫开发实战》](https://python3webspider.cuiqingcai.com/) - 崔庆才
 2. 
+
+
+
+
+
