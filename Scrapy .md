@@ -200,6 +200,205 @@ class Ruan8Spider(scrapy.Spider):
 
 
 
+## 案例
+
+### paopaoche.net
+
+```python
+# -*- coding: utf-8 -*-
+import scrapy
+import re
+from config_spider.items import Item
+from urllib.parse import urljoin, urlparse
+
+def get_real_url(response, url):
+    if re.search(r'^https?', url):
+        return url
+    elif re.search(r'^\/\/', url):
+        u = urlparse(response.url)
+        return u.scheme + ":" + url
+    return urljoin(response.url, url)
+
+class ConfigSpider(scrapy.Spider):
+    name = 'config_spider'
+
+    CLASS_ENUM = {
+        '角色扮演': 4, 
+        '动作冒险': 17, 
+        '体育运动': 14, 
+        '休闲益智': 12, 
+        '模拟经营': 16, 
+        '射击游戏': 13, 
+        '策略塔防': 18, 
+        '赛车竞速': 15, 
+        '音乐舞蹈': 19, 
+        '卡牌回合': 20, 
+        '手机桌游': 21,
+    }
+    
+    class_urls = ['https://www.paopaoche.net/android/jsby/', 'https://www.paopaoche.net/android/dzmx/', 'https://www.paopaoche.net/android/tyyd/', 'https://www.paopaoche.net/android/xxyz/', 'https://www.paopaoche.net/android/mnjy/', 'https://www.paopaoche.net/android/sjyx/', 'https://www.paopaoche.net/android/cltf/', 'https://www.paopaoche.net/android/scjs/', 'https://www.paopaoche.net/android/yywd/', 'https://www.paopaoche.net/android/kphh/', 'https://www.paopaoche.net/android/sjzy/']
+    def start_requests(self):
+        for url in self.class_urls:
+        	yield scrapy.Request(url=url, callback=self.parse_list)
+
+    def parse_list(self, response):
+        prev_item = response.meta.get('item')
+        for elem in response.xpath('//ul[@class="aznyList"]/li'):
+            item = Item()
+            item['title'] = elem.xpath('string(./a[@class="softname"]/@title)').extract_first()
+            item['link'] = elem.xpath('string(./a[@class="softname"]/@href)').extract_first()
+            item['cover'] = elem.xpath('string(.//img/@src)').extract_first()
+            if prev_item is not None:
+                for key, value in prev_item.items():
+                    item[key] = value
+            if not item['link']:
+                continue
+            yield scrapy.Request(url=get_real_url(response, item['link']), callback=self.parse_detail, meta={'item': item})
+        next_url = response.xpath('//a[@class="next"]/@href').get()
+        yield scrapy.Request(url=get_real_url(response, next_url), callback=self.parse_list, meta={'item': prev_item})
+
+    def parse_detail(self, response):
+        item = Item() if response.meta.get('item') is None else response.meta.get('item')
+        item['version'] = response.xpath('//div[@class="right"]/p[1]/text()').extract_first()
+        if item['version']:
+            item['version'] = item['version'].strip()
+            
+        item['piclist'] = response.xpath('//div[@class="nyBannerimg"]/img/@src').getall()
+        if item['piclist']:
+            item['piclist'] = ",".join(list(map(lambda x: x.rstrip('\r').strip(), item['piclist'])))
+        
+        #item['content'] = response.xpath('string(//div[@id="game1"])').extract_first()
+        item['size'] = response.xpath('//div[@class="infor"]/ul/li[contains(.,"大小")]/text()[2]').extract_first()
+        if item['size']:
+            item['size'] = item['size'].strip()
+            
+        item['classname'] = response.xpath('//div[@class="infor"]/ul/li[contains(.,"类别")]/text()[2]').extract_first()
+        if item['classname']:
+            item['classname'] = item['classname'].strip()
+            item['classid'] = self.CLASS_ENUM.get(item['classname'], 0)
+            
+        
+        #item['download'] = response.xpath('//li[@class="address_like"][1]/a/@href').extract_first()
+        
+        item['content'] = ''
+        matchObj = re.search(
+            r'<div class="azny_content" id="game1">(.*?)</div>', response.text, re.I | re.M | re.S)
+        if matchObj:
+            item['content'] = matchObj.group(1)
+            
+        yield item
+```
+
+### xiazaiba.com
+
+```python
+# -*- coding: utf-8 -*-
+import scrapy
+import re
+from config_spider.items import Item
+from urllib.parse import urljoin, urlparse
+
+def get_real_url(response, url):
+    if re.search(r'^https?', url):
+        return url
+    elif re.search(r'^\/\/', url):
+        u = urlparse(response.url)
+        return u.scheme + ":" + url
+    return urljoin(response.url, url)
+
+class ConfigSpider(scrapy.Spider):
+    name = 'config_spider'
+    
+    CLASS_ENUM = {
+        '生活服务': 23, 
+        '社交通讯': 11, 
+        '购物比价': 33, 
+        '资讯阅读': 35, 
+        '影音播放': 5 , 
+        '图像拍照': 27, 
+        '学习教育': 35, 
+        '金融理财': 34, 
+        '商务办公': 34, 
+        '交通出行': 25, 
+        '旅游住宿': 24, 
+        '丽人母婴': 11, 
+        '美食菜谱': 39, 
+        '运动健身': 26, 
+        '健康医疗': 30, 
+        '主题美化': 28, 
+        '安全防护': 28, 
+        '系统软件': 28, 
+        '趣味娱乐': 5, 
+        '游戏工具': 28, 
+        '休闲益智': 12, 
+        '策略塔防': 18, 
+        '动作冒险': 17, 
+        '角色扮演': 4, 
+        '飞行射击': 13, 
+        '体育竞技': 14, 
+        '赛车竞速': 15, 
+        '棋牌卡牌': 20, 
+        '养成经营': 16,
+    }
+
+    def start_requests(self):
+        yield scrapy.Request(url='https://www.xiazaiba.com/android/app/index_1.html', callback=self.parse_list)
+        yield scrapy.Request(url='https://www.xiazaiba.com/android/game/index_1.html', callback=self.parse_list)
+
+    def parse_list(self, response):
+        prev_item = response.meta.get('item')
+        for elem in response.xpath('//ul[@class="down-list"]/li'):
+            item = Item()
+            item['title'] = elem.xpath('string(./div[@class="dlr fr"]/a/text())').extract_first()
+            item['url'] = get_real_url(response, elem.xpath('./div[@class="dlr fr"]/a/@href').extract_first())
+            item['cover'] = elem.xpath('string(./div[@class="dll fl"]/a/img/@src)').extract_first()
+            item['desc'] = elem.xpath('string(./div[@class="dlr fr"]/div[@class="d3 mt10"]/text())').extract_first()
+            if prev_item is not None:
+                for key, value in prev_item.items():
+                    item[key] = value
+            if not item['url']:
+                continue
+            yield scrapy.Request(url=get_real_url(response, item['url']), callback=self.parse_detail, meta={'item': item})
+        next_url = response.xpath('//div[@class="paginator"]/a[text()="下一页"]/@href').get()
+        yield scrapy.Request(url=get_real_url(response, next_url), callback=self.parse_list, meta={'item': prev_item})
+
+    def parse_detail(self, response):
+        item = Item() if response.meta.get('item') is None else response.meta.get('item')
+        version = u'版本：'
+        item['version'] = response.xpath(f'string(//ul[@class="gc-2-con clearfix mt10"]/li[contains(., "{version}")]/text())').get()
+        if item['version']:
+            item['version'] = item['version'].replace(version, '')
+            
+        size = u'大小：'
+        item['size'] = response.xpath(f'string(//ul[@class="gc-2-con clearfix mt10"]/li[contains(., "{size}")]/text())').get()
+        if item['size']:
+            item['size'] = item['size'].replace(size, '')
+            
+        classname = u'分类：'
+        item['classname'] = response.xpath(f'string(//ul[@class="gc-2-con clearfix mt10"]/li[contains(., "{classname}")]/text())').get()
+        if item['classname']:
+            item['classname'] = item['classname'].replace(classname, '').strip()
+            item['classid'] = self.CLASS_ENUM.get(item['classname'], 0)
+            
+            
+        item['download'] = response.xpath('string(//ul[@class="gc-2-btn mt10"]/li/a/@href)').get()
+        item['piclist'] = response.xpath('//li[@class="xtaber-item"]/img/@src').getall()
+        if item['piclist']:
+            item['piclist'] = ",".join(list(map(lambda x: x.rstrip('\r').strip(), item['piclist'])))
+        #item['content'] = response.xpath('string(//div[@class="con add-con"])').get()
+        item['content'] = ''
+        matchObj = re.search(
+            r'<div class="con add-con">(.*?)</div>', response.text, re.I | re.M | re.S)
+        if matchObj:
+            item['content'] = matchObj.group(1)
+        yield item
+
+
+
+```
+
+
+
 ## 扩展
 
 ### scrapy-fake-useragent
@@ -212,6 +411,10 @@ pip install scrapy-fake-useragent
 
 ### Scrapy-Redis
 
+![img](https://thsheep-wordpress.oss-cn-beijing.aliyuncs.com/62d1dc3038e8b596d6df6f8e8a28258a.jpg)
+
+
+
 ### *scrapy*-*redis*-bloomfilter
 
 https://github.com/Python3WebSpider/ScrapyRedisBloomFilter
@@ -221,8 +424,9 @@ https://github.com/Python3WebSpider/ScrapyRedisBloomFilter
 ```shell
 1. pip install scrapy-redis-bloomfilter
 
+# 可以看到 依赖 redis-4.0.2 
 """
-..........
+.......... 
 Successfully installed deprecated-1.2.13 redis-4.0.2 scrapy-redis-0.7.1 scrapy-redis-bloomfilter-0.8.1 wrapt-1.13.3
 安装完成
 """
@@ -277,14 +481,19 @@ SCHEDULER_PERSIST = True
  'downloader/request_method_count/GET': 17243,
  'downloader/response_bytes': 157482876,
  'downloader/response_count': 17243,
- 'downloader/response_status_count/200': 17231,
+ 
+ # 下载返回状态码对应的数据条数
+ 'downloader/response_status_count/200': 17231, 
  'downloader/response_status_count/301': 1,
  'downloader/response_status_count/302': 1,
  'downloader/response_status_count/403': 9,
  'downloader/response_status_count/404': 1,
+ 
  'elapsed_time_seconds': 2417.790671,
  'finish_reason': 'finished',
  'finish_time': datetime.datetime(2021, 12, 2, 3, 10, 49, 87217),
+ 
+ # 状态码异常数据忽略条数
  'httperror/response_ignored_count': 10,
  'httperror/response_ignored_status_count/403': 9,
  'httperror/response_ignored_status_count/404': 1,
@@ -363,6 +572,16 @@ scrapy shell https://www.ruan8.com/soft/65742.html
 
 ### 方法
 
+#### position()
+
+```python
+>>> response.xpath('//ul[@class="catalog_nav"]/li[position()>1]/a/@href').getall()
+['https://www.paopaoche.net/android/jsby/', 'https://www.paopaoche.net/android/dzmx/', 'https://www.paopaoche.net/android/tyyd/', 'https://www.paopaoche.net/android/xxyz/', 'https://www.paopaoche.net/android/mnjy/', 'https://www.paopaoche.net/android/sjyx/', 'https://www.paopaoche.net/android/cltf/', 'https://www.paopaoche.net/android/scjs/', 'https://www.paopaoche.net/android/yywd/', 'https://www.paopaoche.net/android/kphh/', 'https://www.paopaoche.net/android/sjzy/']
+
+```
+
+
+
 #### text()
 
 ```python
@@ -375,6 +594,8 @@ scrapy shell https://www.ruan8.com/soft/65742.html
 >>> response.xpath('//title/text()').extract_first()
 'QQ音乐tv版下载_QQ音乐tv最新版下载_软吧下载'
 
+# 链接文本内容 = 下一页 的 写法
+response.xpath('//div[@class="paginator"]/a[text()="下一页"]/@href').get()
 
 ```
 
@@ -382,22 +603,32 @@ scrapy shell https://www.ruan8.com/soft/65742.html
 
 #### contains()
 
-```python
-sel.xpath("//a[contains(.//text(), 'Next Page')]").extract()
+https://www.zyte.com/blog/xpath-tips-from-the-web-scraping-trenches/
 
+```python
+sel.xpath("//a[contains(.//text(), 'Next Page')]").extract() # .get() #.getall()
+
+
+# contains 
+response.xpath(f'string(//ul[@class="gc-2-con clearfix mt10"]/li[contains(., "版本：")]/text())').get()
 ```
 
 
 
 #### node()
 
+#### 属性值获取
 
+```python
+# @src @loadsrc 支持 | 或的关系。
+sel.xpath('./div[@class="summary-text"]/p/a/img/@src | ./div[@class="summary-text"]/p/a/img/@loadsrc').getall()
+
+response.xpath('//a[@class="page-next"]/@href').get()
+```
 
 ## CSS
 
 ## 正则表达式
-
-
 
 ### re.match
 
