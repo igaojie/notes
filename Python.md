@@ -271,6 +271,33 @@ print(h)
 
 ```
 
+## 异常处理
+
+```python
+try:
+    i = j
+except NameError:
+    print("变量为定义")
+    
+
+try:
+    i = j
+except NameError as e:
+    print("变量为定义 %s" %e) # 变量为定义 name 'j' is not defined    
+    
+try:
+    i = j
+except Exception as e: # 捕获所有异常类型
+    print(e)  
+    
+try:
+    raise NameError("hello Error")
+except NameError as e:
+    print(e)
+finally:
+    print("eee")        
+```
+
 
 
 # 数据结构
@@ -688,6 +715,75 @@ l = [1, 2, 3]
 print(*l) # 1, 2, 3
 ```
 
+## 装饰器
+
+```python
+import time
+
+def timer(func):
+    start_time = time.time()
+
+    func()
+
+    end_time = time.time()
+
+    print("程序执行时间 %s" %(end_time - start_time))
+
+@timer
+def i_can_sleep():  # timer(i_can_sleep())
+    time.sleep(3)
+    
+# 这种写法 就算是不调用 i_can_sleep() 方法，也会执行 等待3秒。需要改成 闭包：
+
+import time
+
+def timer(func):
+    def wrapper():
+
+        start_time = time.time()
+
+        func()
+
+        end_time = time.time()
+
+        print("程序执行时间 %s" %(end_time - start_time))
+
+    return wrapper    
+
+@timer
+def i_can_sleep():
+    time.sleep(3)    
+
+i_can_sleep()   
+
+# 程序执行时间 3.0003368854522705
+
+
+
+def new_tips(argv):
+    def tips(func):
+        def n(a, b):
+            print("start {} {}".format(argv, func.__name__))
+            func(a, b)
+            print("end")
+        return n
+    return tips        
+
+
+@new_tips("add")
+def add(a, b):
+    print(a + b)    
+
+add(1, 2)
+
+@new_tips("sub")
+def sub(a, b):
+    print(a - b)
+
+sub(3, 2)
+    
+```
+
 
 
 
@@ -814,6 +910,30 @@ func5 = 0.00157338432678  % formatting
 ## itertools
 
 itertools - 为高效循环而创建迭代器的函数.
+
+## datetime
+
+```python
+import datetime
+
+for i in range(1, 10):
+    d = datetime.datetime(2021, 11, 6) - datetime.timedelta(i) # 
+    df = d.strftime('%Y-%m-%d') # 格式化
+    print(df)
+    
+2021-11-05
+2021-11-04
+2021-11-03
+2021-11-02
+2021-11-01
+2021-10-31
+2021-10-30
+2021-10-29
+2021-10-28    
+    
+```
+
+
 
 # 协程
 
@@ -1090,6 +1210,112 @@ python test/flask_server.py
 127.0.0.1 - - [14/Nov/2021 09:57:45] "GET /b HTTP/1.1" 200 -
 127.0.0.1 - - [14/Nov/2021 09:57:47] "GET /c HTTP/1.1" 200 -
 ```
+
+## FastAPI
+
+### 安装
+
+```shell
+# pip install fastapi
+Collecting fastapi
+  Downloading fastapi-0.70.0-py3-none-any.whl (51 kB)
+     |████████████████████████████████| 51 kB 576 kB/s
+Collecting starlette==0.16.0
+  Downloading starlette-0.16.0-py3-none-any.whl (61 kB)
+     |████████████████████████████████| 61 kB 720 kB/s
+Collecting pydantic!=1.7,!=1.7.1,!=1.7.2,!=1.7.3,!=1.8,!=1.8.1,<2.0.0,>=1.6.2
+  Downloading pydantic-1.8.2-cp37-cp37m-macosx_10_9_x86_64.whl (2.6 MB)
+     |████████████████████████████████| 2.6 MB 2.7 MB/s
+Collecting anyio<4,>=3.0.0
+  Downloading anyio-3.4.0-py3-none-any.whl (78 kB)
+     |████████████████████████████████| 78 kB 16.4 MB/s
+Requirement already satisfied: typing-extensions in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from starlette==0.16.0->fastapi) (3.10.0.2)
+Collecting sniffio>=1.1
+  Downloading sniffio-1.2.0-py3-none-any.whl (10 kB)
+Requirement already satisfied: idna>=2.8 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from anyio<4,>=3.0.0->starlette==0.16.0->fastapi) (3.2)
+Installing collected packages: sniffio, anyio, starlette, pydantic, fastapi
+Successfully installed anyio-3.4.0 fastapi-0.70.0 pydantic-1.8.2 sniffio-1.2.0 starlette-0.16.0
+
+
+
+# pip install uvicorn
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', OSError(0, 'Error'))': /simple/uvicorn/
+Collecting uvicorn
+  Downloading uvicorn-0.15.0-py3-none-any.whl (54 kB)
+     |████████████████████████████████| 54 kB 842 kB/s 
+Requirement already satisfied: typing-extensions in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from uvicorn) (3.10.0.2)
+Collecting h11>=0.8
+  Downloading h11-0.12.0-py3-none-any.whl (54 kB)
+     |████████████████████████████████| 54 kB 2.2 MB/s 
+Requirement already satisfied: click>=7.0 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from uvicorn) (8.0.3)
+Collecting asgiref>=3.4.0
+  Downloading asgiref-3.4.1-py3-none-any.whl (25 kB)
+Requirement already satisfied: importlib-metadata in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from click>=7.0->uvicorn) (4.8.1)
+Requirement already satisfied: zipp>=0.5 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from importlib-metadata->click>=7.0->uvicorn) (3.6.0)
+Installing collected packages: h11, asgiref, uvicorn
+Successfully installed asgiref-3.4.1 h11-0.12.0 uvicorn-0.15.0
+```
+
+## 启动
+
+```shell
+ uvicorn main:app --reload #--reload：让服务器在更新代码后重新启动。仅在开发时使用该选项。
+zsh: /usr/local/bin/uvicorn: bad interpreter: /usr/local/opt/python/bin/python3.7: no such file or directory
+INFO:     Will watch for changes in these directories: ['/Users/shaogaojie/Works/study/FastAPI']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit) # 应用在本机所提供服务的 URL 地址。 
+INFO:     Started reloader process [20712] using statreload
+INFO:     Started server process [20714]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+
+# curl -i http://127.0.0.1:8000/
+HTTP/1.1 200 OK
+date: Mon, 06 Dec 2021 12:11:03 GMT
+server: uvicorn
+content-length: 25
+content-type: application/json
+
+{"message":"Hello World"}%
+
+# http://127.0.0.1:8000/docs 交互式API文档地址
+```
+
+### 交互式文档
+
+ http://127.0.0.1:8000/docs 交互式API文档地址
+
+### openapi.json
+
+```json
+http://127.0.0.1:8000/openapi.json 
+{
+	"openapi": "3.0.2",
+	"info": {
+		"title": "FastAPI",
+		"version": "0.1.0"
+	},
+	"paths": {
+		"/": {
+			"get": {
+				"summary": "Root",
+				"operationId": "root__get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+```
+
+
 
 # 常用包
 
