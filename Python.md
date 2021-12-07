@@ -933,6 +933,139 @@ for i in range(1, 10):
     
 ```
 
+# 线程
+
+```python
+import threading
+
+def myThread(arg1, arg2):
+    print("{} {}".format(arg1, arg2))
+
+for i in range(1, 6, 1):
+    #t1 = myThread(i, i + 1)    
+    t1 = threading.Thread(target=myThread, args=(i, i+1))
+    t1.start()
+```
+
+```python
+import threading
+import time
+from threading import current_thread
+
+def myThread(arg1, arg2):
+    print(current_thread().getName(), " start..")
+    time.sleep(1)
+    print("{} {}".format(arg1, arg2))
+    print(current_thread().getName(), " stop ")
+
+for i in range(1, 6, 1):
+    #t1 = myThread(i, i + 1)    
+    t1 = threading.Thread(target=myThread, args=(i, i+1))
+    t1.start()
+
+print(current_thread().getName())   
+
+############# 执行结果
+Thread-1  start..
+Thread-2  start..
+Thread-3  start..
+Thread-4  start..
+Thread-5  start..
+MainThread
+1 2
+Thread-1  stop 
+5 6
+Thread-5  stop 
+4 5
+3 4
+Thread-3  stop 
+2 3
+Thread-4  stop 
+Thread-2  stop 
+
+```
+
+```python
+import threading
+from threading import current_thread
+import time
+class Mythread(threading.Thread):
+    def run(self):
+        print(current_thread().getName(), " start ")
+        print("run")
+        time.sleep(3)
+        print(current_thread().getName(), " end ")
+
+t1 = Mythread()
+t1.start()
+t1.join()
+
+print(current_thread().getName())
+```
+
+```python
+from threading import Thread, current_thread
+import time
+import random
+from queue import Queue
+
+queue = Queue(5)
+
+class ProducerThread(Thread):
+    def run(self):
+        name = current_thread().getName()
+        nums = range(100)
+        global queue
+
+        while True:
+            num = random.choice(nums)
+            queue.put(num)
+
+            print("生产者 {} 生产了数据 {}".format(name, num))
+            t = random.randint(1,3)
+            time.sleep(t)
+            print("生产者 {} 睡眠了 {} 秒".format(name, t))
+
+class ConsumerThread(Thread):
+    def run(self):
+        name = current_thread().getName()
+        global queue    
+
+        while True:
+            num = queue.get()
+            queue.task_done()
+            print("消费者 {} 消费了数据 {}".format(name, num))
+
+            t = random.randint(1, 5)
+            time.sleep(t)
+            print("消费者 {} 睡眠了 {} 秒".format(name, t))
+
+
+p1 = ProducerThread(name="p1")
+p1.start()
+
+p2 = ProducerThread(name="p2")
+p2.start()
+
+p3 = ProducerThread(name="p1")
+p3.start()
+
+p4 = ProducerThread(name="p2")
+p4.start()
+
+p5 = ProducerThread(name="p1")
+p5.start()
+
+p6 = ProducerThread(name="p2")
+p6.start()
+
+c1 = ConsumerThread(name = "c1")
+c1.start()
+
+c2 = ConsumerThread(name="c2")
+c2.start()
+```
+
 
 
 # 协程
@@ -1229,10 +1362,10 @@ Collecting pydantic!=1.7,!=1.7.1,!=1.7.2,!=1.7.3,!=1.8,!=1.8.1,<2.0.0,>=1.6.2
 Collecting anyio<4,>=3.0.0
   Downloading anyio-3.4.0-py3-none-any.whl (78 kB)
      |████████████████████████████████| 78 kB 16.4 MB/s
-Requirement already satisfied: typing-extensions in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from starlette==0.16.0->fastapi) (3.10.0.2)
+Requirement already satisfied: typing-extensions in /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from starlette==0.16.0->fastapi) (3.10.0.2)
 Collecting sniffio>=1.1
   Downloading sniffio-1.2.0-py3-none-any.whl (10 kB)
-Requirement already satisfied: idna>=2.8 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from anyio<4,>=3.0.0->starlette==0.16.0->fastapi) (3.2)
+Requirement already satisfied: idna>=2.8 in /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from anyio<4,>=3.0.0->starlette==0.16.0->fastapi) (3.2)
 Installing collected packages: sniffio, anyio, starlette, pydantic, fastapi
 Successfully installed anyio-3.4.0 fastapi-0.70.0 pydantic-1.8.2 sniffio-1.2.0 starlette-0.16.0
 
@@ -1243,15 +1376,15 @@ WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status
 Collecting uvicorn
   Downloading uvicorn-0.15.0-py3-none-any.whl (54 kB)
      |████████████████████████████████| 54 kB 842 kB/s 
-Requirement already satisfied: typing-extensions in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from uvicorn) (3.10.0.2)
+Requirement already satisfied: typing-extensions in /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from uvicorn) (3.10.0.2)
 Collecting h11>=0.8
   Downloading h11-0.12.0-py3-none-any.whl (54 kB)
      |████████████████████████████████| 54 kB 2.2 MB/s 
-Requirement already satisfied: click>=7.0 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from uvicorn) (8.0.3)
+Requirement already satisfied: click>=7.0 in /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from uvicorn) (8.0.3)
 Collecting asgiref>=3.4.0
   Downloading asgiref-3.4.1-py3-none-any.whl (25 kB)
-Requirement already satisfied: importlib-metadata in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from click>=7.0->uvicorn) (4.8.1)
-Requirement already satisfied: zipp>=0.5 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from importlib-metadata->click>=7.0->uvicorn) (3.6.0)
+Requirement already satisfied: importlib-metadata in /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from click>=7.0->uvicorn) (4.8.1)
+Requirement already satisfied: zipp>=0.5 in /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from importlib-metadata->click>=7.0->uvicorn) (3.6.0)
 Installing collected packages: h11, asgiref, uvicorn
 Successfully installed asgiref-3.4.1 h11-0.12.0 uvicorn-0.15.0
 ```
@@ -1261,7 +1394,7 @@ Successfully installed asgiref-3.4.1 h11-0.12.0 uvicorn-0.15.0
 ```shell
  uvicorn main:app --reload #--reload：让服务器在更新代码后重新启动。仅在开发时使用该选项。
 zsh: /usr/local/bin/uvicorn: bad interpreter: /usr/local/opt/python/bin/python3.7: no such file or directory
-INFO:     Will watch for changes in these directories: ['/Users/shaogaojie/Works/study/FastAPI']
+INFO:     Will watch for changes in these directories: ['/Users/xxx/Works/study/FastAPI']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit) # 应用在本机所提供服务的 URL 地址。 
 INFO:     Started reloader process [20712] using statreload
 INFO:     Started server process [20714]
