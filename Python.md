@@ -905,6 +905,38 @@ func4 = 0.00301686387516  izip
 func5 = 0.00157338432678  % formatting    
 ```
 
+## enumerate
+
+```python
+>>> list1 = ["a", "b", "c"]
+>>> enumerate(list1) # 返回 enumerate(枚举) 对象。
+
+<enumerate object at 0x7f81a22eac30> # 经常用在 for 循环中，可以方便的取到 索引
+>>> list(enumerate(list1))
+[(0, 'a'), (1, 'b'), (2, 'c')]
+>>> for i, v in enumerate(list1):
+...     print(i, v)
+... 
+0 a
+1 b
+2 c
+>>> 
+# sequence -- 一个序列、迭代器或其他支持迭代对象。
+# start -- 下标起始位置。
+>>> for i, v in enumerate(list1, 3):
+...     print(i, v)
+... 
+3 a
+4 b
+5 c
+```
+
+
+
+
+
+
+
 # 常用标准库
 
 ## itertools

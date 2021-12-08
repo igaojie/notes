@@ -8,8 +8,8 @@
 (py3-7) # conda activate py3-7
 
 (py3-7) # scrapy startproject bmsspider
-New Scrapy project 'bmsspider', using template directory '/Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages/scrapy/templates/project', created in:
-    /Users/shaogaojie/Works/bingmeishi/bmsspider
+New Scrapy project 'bmsspider', using template directory '/Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages/scrapy/templates/project', created in:
+    /Users/xxx/Works/bingmeishi/bmsspider
 
 You can start your first spider with:
     cd bmsspider
@@ -397,6 +397,79 @@ class ConfigSpider(scrapy.Spider):
 
 ```
 
+### 海淀驾校班车
+
+学以致用，查看海淀驾校的班车那几趟路过地铁站，挨个看太麻烦了。索性上代码。
+
+```python
+import scrapy
+from scrapy.utils.response import get_base_url
+from bmsspider.items import HaijiaItem
+
+
+class HaijiabusSpider(scrapy.Spider):
+    name = 'haijiabus'
+    #allowed_domains = ['http://www.haijia.com.cn/']
+    domain = 'http://www.haijia.com.cn'
+    start_urls = ['http://www.haijia.com.cn/line.html']
+
+    def parse(self, response):
+        for elem in response.xpath('//td[@class="pl_53"]'):
+            item = HaijiaItem()
+            item['line_name'] = elem.xpath('./a/text()').get()
+            #print(response.url, elem.xpath('./a/@href').get())
+            item['line_link'] = self.domain + elem.xpath('./a/@href').get()  
+            yield scrapy.Request(url = item['line_link'], callback=self.parse_detail, meta={'item': item})
+            
+        pass
+
+    def parse_detail(self, response):
+        item = response.meta['item'] if response.meta['item'] else HaijiaItem()
+        line_stations= response.xpath('//table//tr/td[2]/text()').getall()
+        #处理一下
+        line_stations = list(map(lambda x: x.strip(), line_stations))
+        item['line_stations'] = line_stations
+        print(item)
+        yield item
+
+
+# 执行命令
+scrapy crawl haijiabus -s ITEM_PIPELINES={} --loglevel=ERROR
+
+ scrapy crawl --help                                                                
+Usage
+=====
+  scrapy crawl [options] <spider>
+
+Run a spider
+
+Options
+=======
+--help, -h              show this help message and exit
+-a NAME=VALUE           set spider argument (may be repeated)
+--output=FILE, -o FILE  append scraped items to the end of FILE (use - for # 输出数据到某文件 -o haijiabus.json
+                        stdout)
+--overwrite-output=FILE, -O FILE
+                        dump scraped items into FILE, overwriting any existing
+                        file
+--output-format=FORMAT, -t FORMAT
+                        format to use for dumping items
+
+Global Options
+--------------
+--logfile=FILE          log file. if omitted stderr will be used # 定义日志文件
+--loglevel=LEVEL, -L LEVEL # 日志等级
+                        log level (default: DEBUG)
+--nolog                 disable logging completely
+--profile=FILE          write python cProfile stats to FILE
+--pidfile=FILE          write process ID to FILE
+--set=NAME=VALUE, -s NAME=VALUE # 覆盖setting文件的设置参数
+                        set/override setting (may be repeated)
+--pdb                   enable pdb on failure
+```
+
+
+
 # Scrapyd
 
 ## 简介
@@ -415,10 +488,10 @@ pip install scrapyd
 # scrapyd
 
  scrapyd
-2021-12-04T12:10:36+0800 [-] Loading /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages/scrapyd/txapp.py...
+2021-12-04T12:10:36+0800 [-] Loading /Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages/scrapyd/txapp.py...
 2021-12-04T12:10:36+0800 [-] Scrapyd web console available at http://127.0.0.1:6800/
 2021-12-04T12:10:36+0800 [-] Loaded.
-2021-12-04T12:10:36+0800 [twisted.scripts._twistd_unix.UnixAppLogger#info] twistd 21.2.0 (/Users/shaogaojie/opt/anaconda3/envs/py3-7/bin/python 3.7.11) starting up.
+2021-12-04T12:10:36+0800 [twisted.scripts._twistd_unix.UnixAppLogger#info] twistd 21.2.0 (/Users/xxx/opt/anaconda3/envs/py3-7/bin/python 3.7.11) starting up.
 2021-12-04T12:10:36+0800 [twisted.scripts._twistd_unix.UnixAppLogger#info] reactor class: twisted.internet.selectreactor.SelectReactor.
 2021-12-04T12:10:36+0800 [-] Site starting on 6800
 2021-12-04T12:10:36+0800 [twisted.web.server.Site#info] Starting factory <twisted.web.server.Site object at 0x7f8010b2d890>
@@ -433,7 +506,7 @@ http://127.0.0.1:6800/
 ```shell
 curl http://localhost:6800/schedule.json -d project=default -d spider=somespider
 {"node_name": "ShaodeMacBook-Pro.local", "status": "error", "message": "Scrapy 2.4.1 - no active project\n\nUnknown command: list\n\nUse \"scrapy\" to see available commands\n"}
-(py3-7)  shaogaojie@ShaodeMacBook-Pro  ~  
+(py3-7)  xxx@ShaodeMacBook-Pro  ~  
 ```
 
 
@@ -929,9 +1002,9 @@ loop = asyncio.get_event_loop()
 # Traceback (most recent call last):
 #   File "test/multi_task.py", line 29, in <module>
 #     loop.run_until_complete((stasks))
-#   File "/Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/asyncio/base_events.py", line 566, in run_until_complete
+#   File "/Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/asyncio/base_events.py", line 566, in run_until_complete
 #     future = tasks.ensure_future(future, loop=self)
-#   File "/Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/asyncio/tasks.py", line 619, in ensure_future
+#   File "/Users/xxx/opt/anaconda3/envs/py3-7/lib/python3.7/asyncio/tasks.py", line 619, in ensure_future
 #     raise TypeError('An asyncio.Future, a coroutine or an awaitable is '
 # TypeError: An asyncio.Future, a coroutine or an awaitable is required
 
