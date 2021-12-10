@@ -1,3 +1,9 @@
+# 架构
+
+![img](https://www.runoob.com/wp-content/uploads/2016/04/576507-docker1.png)
+
+
+
 # 安装
 
 ## Centos 8 安装 Docker
@@ -285,6 +291,148 @@ OS/Arch:      linux/amd64
 
 # 基本命令
 
+## docker run
+
+
+
+## docker images
+
+```shell
+(base) [root@localhost ~]# docker images
+REPOSITORY        TAG       IMAGE ID       CREATED         SIZE
+redis             latest    40c68ed3a4d2   3 weeks ago     113MB
+mongo             4.4.10    275f79a10a88   3 weeks ago     437MB
+hello-world       latest    feb5d9fea6a5   2 months ago    13.3kB
+mongo             3.6       2f21415cb85f   7 months ago    453MB
+tikazyq/crawlab   latest    b2c11b2351e8   12 months ago   700MB
+```
+
+
+
+## docker ps
+
+```shell
+# docker ps -h
+Flag shorthand -h has been deprecated, please use --help
+
+Usage:  docker ps [OPTIONS]
+
+List containers
+
+Options:
+  -a, --all             Show all containers (default shows just
+                        running) # 展示所有的容器，默认仅显示 running 的容器。
+  -f, --filter filter   Filter output based on conditions provided
+      --format string   Pretty-print containers using a Go template
+  -n, --last int        Show n last created containers (includes
+                        all states) (default -1) # 展示最新创建的容器 
+  -l, --latest          Show the latest created container
+                        (includes all states)
+      --no-trunc        Don't truncate output
+  -q, --quiet           Only display container IDs  # 仅仅展示 容器ID
+  -s, --size            Display total file sizes 
+  
+```
+
+
+
+```shell
+# docker ps
+
+#容器ID        镜像                      启动容器时运行的命令        容器的创建时间  容器状态    容器的端口信息和使用的连接类型 
+CONTAINER ID   IMAGE                    COMMAND                  CREATED      STATUS      PORTS                                                                                  NAMES （#容器名称 ）
+356791adbc84   tikazyq/crawlab:latest   "/bin/bash /app/dock…"   7 days ago   Up 7 days   8000/tcp, 8080/tcp                                                                     crawlab-worker-02
+a5ff56008627   tikazyq/crawlab:latest   "/bin/bash /app/dock…"   7 days ago   Up 7 days   8000/tcp, 8080/tcp                                                                     crawlab-worker-01
+f9499878e9ef   tikazyq/crawlab:latest   "/bin/bash /app/dock…"   7 days ago   Up 7 days   0.0.0.0:8000->8000/tcp, :::8000->8000/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp   crawlab-master
+05046c19feba   redis:latest             "docker-entrypoint.s…"   7 days ago   Up 7 days   0.0.0.0:6379->6379/tcp, :::6379->6379/tcp                                              redis
+f4e17f96c88f   mongo:3.6                "docker-entrypoint.s…"   7 days ago   Up 7 days   0.0.0.0:27017->27017/tcp, :::27017->27017/tcp                                          mongo
+
+
+STATUS: 容器状态。
+  状态有7种：
+  created（已创建）
+  restarting（重启中）
+  running 或 Up（运行中）
+  removing（迁移中）
+  paused（暂停）
+  exited（停止）
+  dead（死亡）
+  
+  
+  
+```
+
+## docker exec 
+
+- **-i:** 允许你对容器内的标准输入 (STDIN) 进行交互。
+- **-t:** 在新容器内指定一个伪终端或终端。
+
+```shell
+# docker exec -it 05046c19feba /bin/bash 
+root@05046c19feba:/data#  # 进去就是微型的Linux 了。
+
+root@05046c19feba:/data# cat /proc/version
+Linux version 4.18.0-348.2.1.el8_5.x86_64 (mockbuild@kbuilder.bsys.centos.org) (gcc version 8.5.0 20210514 (Red Hat 8.5.0-4) (GCC)) #1 SMP Tue Nov 16 14:42:35 UTC 2021
+```
+
+## docker logs
+
+```shell
+(base) [root@localhost ~]# docker logs 05046c19feba | head -n 5
+1:C 02 Dec 2021 09:31:52.921 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 02 Dec 2021 09:31:52.921 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=1, just started
+1:C 02 Dec 2021 09:31:52.921 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+1:M 02 Dec 2021 09:31:52.921 * monotonic clock: POSIX clock_gettime
+1:M 02 Dec 2021 09:31:52.922 * Running mode=standalone, port=6379.
+```
+
+## docker stop
+
+```shell
+docker stop 05046c19feba 停止容器
+```
+
+## docker rm 
+
+删除容器
+
+## docker container prune
+
+清理掉所有处于终止状态的容器。
+
+
+
+## docker stats
+
+```shell
+(base) [root@localhost ~]# docker stats -h
+Flag shorthand -h has been deprecated, please use --help
+
+Usage:  docker stats [OPTIONS] [CONTAINER...]
+
+Display a live stream of container(s) resource usage statistics
+
+Options:
+  -a, --all             Show all containers (default shows just
+                        running) # 列出所有容器的状态
+      --format string   Pretty-print images using a Go template
+      --no-stream       Disable streaming stats and only pull the
+                        first result # 只刷一次
+      --no-trunc        Do not truncate output
+```
+
+```shell
+(base) [root@localhost ~]# docker stats --no-stream
+CONTAINER ID   NAME                CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O         PIDS
+356791adbc84   crawlab-worker-02   0.59%     141.3MiB / 7.507GiB   1.84%     4.68GB / 5.5GB    260MB / 137MB     19
+a5ff56008627   crawlab-worker-01   0.56%     107.4MiB / 7.507GiB   1.40%     5.47GB / 6.59GB   35.5MB / 133MB    18
+f9499878e9ef   crawlab-master      0.66%     177.2MiB / 7.507GiB   2.31%     5.79GB / 6.33GB   173MB / 149MB     18
+05046c19feba   redis               0.20%     16.55MiB / 7.507GiB   0.22%     15.2GB / 8.04GB   37.9MB / 59.6MB   6
+f4e17f96c88f   mongo               0.14%     2.848GiB / 7.507GiB   37.94%    2.62GB / 6.65GB   91.3MB / 27.8GB   53
+(base) [root@localhost ~]#
+
+```
+
 
 
 # 网络
@@ -311,7 +459,7 @@ ip addr / ifconfig
        
 ```
 
-![image-20211122171417196](/Users/shaogaojie/Library/Application Support/typora-user-images/image-20211122171417196.png)
+![image-20211122171417196](/Users/xxx/Library/Application Support/typora-user-images/image-20211122171417196.png)
 
 ## 访问外网
 

@@ -402,8 +402,10 @@ class ConfigSpider(scrapy.Spider):
 学以致用，查看海淀驾校的班车那几趟路过地铁站，挨个看太麻烦了。索性上代码。
 
 ```python
+import string
 import scrapy
-from scrapy.utils.response import get_base_url
+from scrapy.utils.response import get_base_url 获取base_url 
+from scrapy.utils.url import urljoin_rfc # 生成绝对连接地址
 from bmsspider.items import HaijiaItem
 
 
@@ -418,7 +420,9 @@ class HaijiabusSpider(scrapy.Spider):
             item = HaijiaItem()
             item['line_name'] = elem.xpath('./a/text()').get()
             #print(response.url, elem.xpath('./a/@href').get())
-            item['line_link'] = self.domain + elem.xpath('./a/@href').get()  
+            
+            
+            item['line_link'] = urljoin_rfc(get_base_url(response), elem.xpath('./a/@href').get() ).decode('utf-8')
             yield scrapy.Request(url = item['line_link'], callback=self.parse_detail, meta={'item': item})
             
         pass
@@ -431,6 +435,8 @@ class HaijiabusSpider(scrapy.Spider):
         item['line_stations'] = line_stations
         print(item)
         yield item
+
+
 
 
 # 执行命令

@@ -464,6 +464,23 @@ print(str)
 
 - encode()
 
+- decode()
+
+  ```python
+  
+  # Return a string decoded from the given bytes. 
+  >>> b"abcde".decode("utf-8")
+  'abcde'
+  >>> 
+  >>> 
+  # Return an encoded version of the string as a bytes object. 
+  >>> 'abcde'.encode("utf-8")
+  b'abcde'
+  >>> 
+  ```
+
+  
+
 - center()
 
 - ljust()
@@ -964,6 +981,227 @@ for i in range(1, 10):
 2021-10-28    
     
 ```
+
+## Pandas
+
+```python
+ pip install pandas
+Collecting pandas
+  Downloading pandas-1.3.4-cp37-cp37m-macosx_10_9_x86_64.whl (11.3 MB)
+     |████████████████████████████████| 11.3 MB 789 kB/s 
+Requirement already satisfied: python-dateutil>=2.7.3 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from pandas) (2.8.2)
+Collecting numpy>=1.17.3
+  Downloading numpy-1.21.4-cp37-cp37m-macosx_10_9_x86_64.whl (16.9 MB)
+     |████████████████████████████████| 16.9 MB 44.1 MB/s 
+Collecting pytz>=2017.3
+  Downloading pytz-2021.3-py2.py3-none-any.whl (503 kB)
+     |████████████████████████████████| 503 kB 436 kB/s 
+Requirement already satisfied: six>=1.5 in /Users/shaogaojie/opt/anaconda3/envs/py3-7/lib/python3.7/site-packages (from python-dateutil>=2.7.3->pandas) (1.16.0)
+Installing collected packages: pytz, numpy, pandas
+Successfully installed numpy-1.21.4 pandas-1.3.4 pytz-2021.3
+
+
+```
+
+1. 列表值生成Series
+
+```shell
+>>> import pandas as pd
+>>> import numpy as np
+>>> s = pd.Series([1,2,4, np.nan, 6, 8])
+>>> s
+0    1.0
+1    2.0
+2    4.0
+3    NaN
+4    6.0
+5    8.0
+dtype: float64
+```
+
+
+
+2. 日期时间索引与标签的NumPy数组生成DataFrame
+
+   ```shell
+   dates = pd.date_range('20130101', periods=6)
+   >>> dates
+   DatetimeIndex(['2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04',
+                  '2013-01-05', '2013-01-06'],
+                 dtype='datetime64[ns]', freq='D')
+                 
+   df = pd.DataFrame(np.random.randn(6, 4), index=dates, columns=list('ABCD'))
+   >>> df
+                      A         B         C         D
+   2013-01-01 -0.237627  0.377572  0.332390  0.432008
+   2013-01-02 -2.249905  1.585376 -0.194195  0.536405
+   2013-01-03 -0.747053 -0.119055  0.313870 -1.845872
+   2013-01-04  0.157305  1.992520 -0.264000  0.032729
+   2013-01-05 -0.653498  1.097736  0.370802 -0.771652
+   2013-01-06 -1.155164 -1.799019 -0.513999  0.598117              
+   ```
+
+   
+
+3. Series 字典对象生成 DataFrame
+
+   ```python
+   >>> df2 = pd.DataFrame({'A': 1.,'B': pd.Timestamp('20130102'),'C': pd.Series(1, index=list(range(4)), dtype='float32'),'D': np.array([3] * 4, dtype='int32'),'E': pd.Categorical(["test", "train", "test", "train"]),'F': 'foo'})
+   >>> df2
+        A          B    C  D      E    F
+   0  1.0 2013-01-02  1.0  3   test  foo
+   1  1.0 2013-01-02  1.0  3  train  foo
+   2  1.0 2013-01-02  1.0  3   test  foo
+   3  1.0 2013-01-02  1.0  3  train  foo
+   >>>
+   
+   >>> df2.dtypes
+   A           float64
+   B    datetime64[ns]
+   C           float32
+   D             int32
+   E          category
+   F            object
+   dtype: object
+   >>>
+   
+   
+   >>> df2.
+   Display all 218 possibilities? (y or n)
+   df2.A                   df2.convert_dtypes(     df2.ge(                 df2.melt(               df2.reset_index(        df2.to_excel(
+   df2.B                   df2.copy(               df2.get(                df2.memory_usage(       df2.rfloordiv(          df2.to_feather(
+   df2.C                   df2.corr(               df2.groupby(            df2.merge(              df2.rmod(               df2.to_gbq(
+   df2.D                   df2.corrwith(           df2.gt(                 df2.min(                df2.rmul(               df2.to_hdf(
+   df2.E                   df2.count(              df2.head(               df2.mod(                df2.rolling(            df2.to_html(
+   df2.F                   df2.cov(                df2.hist(               df2.mode(               df2.round(              df2.to_json(
+   df2.T                   df2.cummax(             df2.iat                 df2.mul(                df2.rpow(               df2.to_latex(
+   df2.abs(                df2.cummin(             df2.idxmax(             df2.multiply(           df2.rsub(               df2.to_markdown(
+   df2.add(                df2.cumprod(            df2.idxmin(             df2.ndim                df2.rtruediv(           df2.to_numpy(
+   df2.add_prefix(         df2.cumsum(             df2.iloc(               df2.ne(                 df2.sample(             df2.to_parquet(
+   df2.add_suffix(         df2.describe(           df2.index               df2.nlargest(           df2.select_dtypes(      df2.to_period(
+   df2.agg(                df2.diff(               df2.infer_objects(      df2.notna(              df2.sem(                df2.to_pickle(
+   df2.aggregate(          df2.div(                df2.info(               df2.notnull(            df2.set_axis(           df2.to_records(
+   df2.align(              df2.divide(             df2.insert(             df2.nsmallest(          df2.set_flags(          df2.to_sql(
+   df2.all(                df2.dot(                df2.interpolate(        df2.nunique(            df2.set_index(          df2.to_stata(
+   df2.any(                df2.drop(               df2.isin(               df2.pad(                df2.shape               df2.to_string(
+   df2.append(             df2.drop_duplicates(    df2.isna(               df2.pct_change(         df2.shift(              df2.to_timestamp(
+   df2.apply(              df2.droplevel(          df2.isnull(             df2.pipe(               df2.size                df2.to_xarray(
+   df2.applymap(           df2.dropna(             df2.items(              df2.pivot(              df2.skew(               df2.to_xml(
+   df2.asfreq(             df2.dtypes              df2.iteritems(          df2.pivot_table(        df2.slice_shift(        df2.transform(
+   df2.asof(               df2.duplicated(         df2.iterrows(           df2.plot(               df2.sort_index(         df2.transpose(
+   df2.assign(             df2.empty               df2.itertuples(         df2.pop(                df2.sort_values(        df2.truediv(
+   df2.astype(             df2.eq(                 df2.join(               df2.pow(                df2.sparse              df2.truncate(
+   df2.at                  df2.equals(             df2.keys(               df2.prod(               df2.squeeze(            df2.tshift(
+   df2.at_time(            df2.eval(               df2.kurt(               df2.product(            df2.stack(              df2.tz_convert(
+   df2.attrs               df2.ewm(                df2.kurtosis(           df2.quantile(           df2.std(                df2.tz_localize(
+   df2.axes                df2.expanding(          df2.last(               df2.query(              df2.style               df2.unstack(
+   df2.backfill(           df2.explode(            df2.last_valid_index(   df2.radd(               df2.sub(                df2.update(
+   df2.between_time(       df2.ffill(              df2.le(                 df2.rank(               df2.subtract(           df2.value_counts(
+   df2.bfill(              df2.fillna(             df2.loc(                df2.rdiv(               df2.sum(                df2.values
+   df2.bool(               df2.filter(             df2.lookup(             df2.reindex(            df2.swapaxes(           df2.var(
+   df2.boxplot(            df2.first(              df2.lt(                 df2.reindex_like(       df2.swaplevel(          df2.where(
+   df2.clip(               df2.first_valid_index(  df2.mad(                df2.rename(             df2.tail(               df2.xs(
+   df2.columns             df2.flags               df2.mask(               df2.rename_axis(        df2.take(
+   df2.combine(            df2.floordiv(           df2.max(                df2.reorder_levels(     df2.to_clipboard(
+   df2.combine_first(      df2.from_dict(          df2.mean(               df2.replace(            df2.to_csv(
+   df2.compare(            df2.from_records(       df2.median(             df2.resample(           df2.to_dict(
+   >>> df2.A
+   0    1.0
+   1    1.0
+   2    1.0
+   3    1.0
+   Name: A, dtype: float64
+     
+     
+   # DataFrame 头部  
+   >>> df.head()
+                      A         B         C         D
+   2013-01-01 -0.237627  0.377572  0.332390  0.432008
+   2013-01-02 -2.249905  1.585376 -0.194195  0.536405
+   2013-01-03 -0.747053 -0.119055  0.313870 -1.845872
+   2013-01-04  0.157305  1.992520 -0.264000  0.032729
+   2013-01-05 -0.653498  1.097736  0.370802 -0.771652
+   >>>
+   >>>
+     
+   # DataFrame 尾部  
+   >>> df.tail(2)
+                      A         B         C         D
+   2013-01-05 -0.653498  1.097736  0.370802 -0.771652
+   2013-01-06 -1.155164 -1.799019 -0.513999  0.598117
+   >>>
+   >>>
+   
+     # DataFrame 索引
+   >>> df.index
+   DatetimeIndex(['2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04',
+                  '2013-01-05', '2013-01-06'],
+                 dtype='datetime64[ns]', freq='D')
+     
+   # 列明  
+   >>> df.columns
+   Index(['A', 'B', 'C', 'D'], dtype='object')  
+   ```
+
+   
+
+4. 
+
+
+
+
+
+
+
+## hypothesis
+
+https://hypothesis.readthedocs.io/en/latest/quickstart.html
+
+```python
+def encode(input_string):
+    count = 1
+    prev = ""
+    lst = []
+    for character in input_string:
+        if character != prev:
+            if prev:
+                entry = (prev, count)
+                lst.append(entry)
+            count = 1
+            prev = character
+        else:
+            count += 1
+    entry = (character, count)
+    lst.append(entry)
+    return lst
+
+
+def decode(lst):
+    q = ""
+    for character, count in lst:
+        q += character * count
+    return q
+  
+  
+from hypothesis import given
+from hypothesis.strategies import text
+
+
+@given(text())
+def test_decode_inverts_encode(s):
+    assert decode(encode(s)) == s  
+  
+```
+
+## glob
+
+```python
+>>> glob.glob('./*.{}'.format('txt'))
+['./file.txt', './requirements.txt']
+>>> 
+```
+
+
 
 # 线程
 
