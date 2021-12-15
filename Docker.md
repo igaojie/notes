@@ -631,13 +631,186 @@ def hello_world():
 
    
 
-10. 
+10. 容器内运行一个mysql 
 
-11. 
+    1. 创建数据卷
 
-12. 
+       ```shell
+       $ docker volume create mysql
+       $ docker volume create mysql_config
+       
+       $ docker volume ls
+       DRIVER    VOLUME NAME
+       local     mysql
+       local     mysql_config
+       ```
 
-13. 
+       
+
+    2. 创建网络
+
+       ```shell
+       $ docker network create mysqlnet
+       
+       $ docker network ls | grep mysqlnet
+       de8481e859aa   mysqlnet   bridge    local
+       ```
+
+       
+
+    3. 启动mysql 容器
+
+       ```shell
+       $ docker run --rm -d -v mysql:/var/lib/mysql \ # 数据卷映射
+         -v mysql_config:/etc/mysql 
+         -p 3306:3306 \ # 端口映射
+         --network mysqlnet \ # 网络
+         --name mysqldb \ # 容器名字
+         -e MYSQL_ROOT_PASSWORD=p@ssw0rd1 \ # mysql root密码
+         mysql # 镜像
+
+    4. 查看
+
+       ```shell
+       $ docker ps | grep mysql
+       db8da92bc2c8   mysql                                "docker-entrypoint.s…"   35 minutes ago   Up 35 minutes   0.0.0.0:3306->3306/tcp, 33060/tcp   mysqldb
+       
+       $ docker exec -it mysqldb mysql -u root -p 
+       Enter password:
+       Welcome to the MySQL monitor.  Commands end with ; or \g.
+       Your MySQL connection id is 13
+       Server version: 8.0.27 MySQL Community Server - GPL
+       
+       Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+       
+       Oracle is a registered trademark of Oracle Corporation and/or its
+       affiliates. Other names may be trademarks of their respective
+       owners.
+       
+       Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+       
+       mysql>
+       ```
+
+       
+
+    5. 数据库容器已经准备完毕。
+
+11. 应用连接mysql db
+
+    ```python
+    from os import curdir
+    from flask import Flask
+    import mysql.connector
+    import json
+    app = Flask(__name__)
+    
+    @app.route('/')
+    def hello_world():
+        return 'Hello , Docker Python ! '
+    
+    @app.route('/widgets')
+    def get_widgets():
+        mydb = mysql.connector.connect(
+            host="mysqldb",
+            user="root",
+            password="p@ssw0rd1",
+            database="inventory"
+        )    
+        cursor = mydb.cursor()
+    
+        cursor.execute("select * from widgets")
+    
+        row_headers = [x[0] for x in cursor.description]
+    
+        results = cursor.fetchall()
+        json_data = []
+        for result in results:
+            json_data.append(dict(zip(row_headers, result)))
+    
+        cursor.close()
+    
+        return json.dumps(json_data)    
+    
+    @app.route('/initdb')
+    def db_int():
+        mydb = mysql.connector.connect(
+            host="mysqldb",
+            user="root",
+            password="p@ssw0rd1",
+        )
+        cursor = mydb.cursor()
+    
+        cursor.execute("DROP DATABASE IF EXISTS inventory")
+        cursor.execute("CREATE DATABASE inventory")
+        cursor.close()
+    
+        mydb = mysql.connector.connect(
+            host="mysqldb",
+            user="root",
+            password="p@ssw0rd1",
+            database="inventory"
+        )    
+        cursor = mydb.cursor()
+    
+        cursor.execute("DROP TABLE IF EXISTS widgets")
+        cursor.execute("CREATE TABLE widgets (name VARCHAR(255), description VARCHAR(255))")
+        cursor.close()
+    
+        return 'init database'
+    
+    if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=5000)
+            
+    
+    ```
+
+    1. 安装  mysql-connector-python
+
+       ```shell
+       $ pip install mysql-connector-python
+       
+       ```
+
+    2. 补充 requirements.txt
+
+       ```shell
+       $ pip freeze | grep mysql-connector-python >> requirements.txt
+       ```
+
+       
+
+    3. 重新生成镜像
+
+       ```shell
+       docker build --tag python-docker-dev .
+       ```
+
+    4. 启动容器
+
+       ```shell
+        docker run \
+         --rm -d \
+         --network mysqlnet \
+         --name rest-server \
+         -p 5000:5000 \
+         python-docker-dev
+       ```
+
+12. 检查结果
+
+    ```shell
+    $ curl http://localhost:5000/initdb # init database
+    $ curl http://localhost:5000/widgets # []
+    ```
+
+    
+
+13. 使用 docker-compose 参考 docker-compose 章节。[docker-compose](#docker-compose)
+
+
+
+
 
 # 网络
 
@@ -715,13 +888,57 @@ net.ipv4.ip_forward = 1
    
    ```
 
-   
+3. docker-compose 方式启动 python-docker 服务
 
-3. x
+   1. 当前目录新建docker-compose.dev.yml 文件
+
+      ```yaml
+      version: '3.8'
+      
+      services:
+       web:
+        build:
+         context: .
+        ports:
+        - 5000:5000
+        volumes:
+        - ./:/app
+      
+       mysqldb:
+        image: mysql
+        ports:
+        - 3306:3306
+        environment:
+        - MYSQL_ROOT_PASSWORD=p@ssw0rd1
+        volumes:
+        - mysql:/var/lib/mysql
+        - mysql_config:/etc/mysql
+      
+      volumes:
+        mysql:
+        mysql_config:
+      ```
+
+      
+
+   2. 启动
+
+      ```shell
+      $ docker-compose -f docker-compose.dev.yml up --build
+      ```
+
+   3. 测试
+
+      ```shell
+      $ curl http://localhost:5000/initdb
+      $ curl http://localhost:5000/widgets
+      ```
+
+      
 
 4. xx
 
-5. xx
+
 
 ## docker-compose.yml
 
