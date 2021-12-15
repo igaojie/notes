@@ -433,7 +433,211 @@ f4e17f96c88f   mongo               0.14%     2.848GiB / 7.507GiB   37.94%    2.6
 
 ```
 
+# 镜像
 
+## 创建 Python 镜像
+
+1. 创建demo应用代码
+
+```shell
+$ cd /path/to/python-docker
+$ pip3 install Flask
+$ pip3 freeze | grep Flask >> requirements.txt
+$ touch app.py
+
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return 'Hello , Docker Python ! '
+    
+    
+```
+
+2. 测试应用
+
+   ```shell
+   $ python3 -m flask run
+   
+   * Environment: production
+      WARNING: This is a development server. Do not use it in a production deployment.
+      Use a production WSGI server instead.
+    * Debug mode: off
+    * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+   127.0.0.1 - - [14/Dec/2021 17:48:59] "GET / HTTP/1.1" 200 -
+   ```
+
+3. 观察日志, 服务正常
+
+   ```shell
+   
+   $ curl -i curl http://127.0.0.1:5000/
+   
+   Hello , Docker Python ! %
+   curl: (6) Could not resolve host: curl
+   HTTP/1.0 200 OK
+   Content-Type: text/html; charset=utf-8
+   Content-Length: 24
+   Server: Werkzeug/2.0.2 Python/3.7.11
+   Date: Tue, 14 Dec 2021 10:04:27 GMT
+   
+   ```
+
+   
+
+4. 创建Dockerfile
+
+   ```shell
+   $ touch Dockerfile
+   $ vim Dockerfile
+   
+   # syntax=docker/dockerfile:1
+   FROM python:3.8-slim-buster
+   
+   WORKDIR /app
+   COPY requirements.txt requirements.txt
+   RUN pip3 install -r requirements.txt
+   
+   COPY . .
+   
+   CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
+   
+   :wq!
+   ```
+
+   
+
+5. 生成镜像
+
+   ```shell
+   $ tree
+   .
+   ├── Dockerfile
+   ├── __pycache__
+   │   └── app.cpython-37.pyc
+   ├── app.py
+   └── requirements.txt
+   
+   1 directory, 4 files
+   
+   
+   $ docker build --tag python-docker .
+   [+] Building 18.1s (14/14) FINISHED                                                  
+    => [internal] load build definition from Dockerfile                            0.0s
+    => => transferring dockerfile: 256B                                            0.0s
+    => [internal] load .dockerignore                                               0.0s
+    => => transferring context: 2B                                                 0.0s
+    => resolve image config for docker.io/docker/dockerfile:1                      4.5s
+    => docker-image://docker.io/docker/dockerfile:1@sha256:42399d4635eddd7a9b8a24  1.2s
+    => => resolve docker.io/docker/dockerfile:1@sha256:42399d4635eddd7a9b8a24be87  0.0s
+    => => sha256:42399d4635eddd7a9b8a24be879d2f9a930d0ed040a61324 2.00kB / 2.00kB  0.0s
+    => => sha256:93f32bd6dd9004897fed4703191f48924975081860667932a4df 528B / 528B  0.0s
+    => => sha256:e532695ddd93ca7c85a816c67afdb352e91052fab7ac19a6 1.21kB / 1.21kB  0.0s
+    => => sha256:24a639a53085eb680e1d11618ac62f3977a3926fedf5b847 9.67MB / 9.67MB  0.9s
+    => => extracting sha256:24a639a53085eb680e1d11618ac62f3977a3926fedf5b8471ace5  0.2s
+    => [internal] load build definition from Dockerfile                            0.0s
+    => [internal] load .dockerignore                                               0.0s
+    => [internal] load metadata for docker.io/library/python:3.8-slim-buster       3.3s
+    => [internal] load build context                                               0.0s
+    => => transferring context: 912B                                               0.0s
+    => [1/5] FROM docker.io/library/python:3.8-slim-buster@sha256:95db858dd3cb058  4.5s
+    => => resolve docker.io/library/python:3.8-slim-buster@sha256:95db858dd3cb058  0.0s
+    => => sha256:d78a351dcf4a1a6db24fb47be30bbe907dc2fdbd763249bf 7.92kB / 7.92kB  0.0s
+    => => sha256:ffbb094f4f9e7c61d97c2b409f3e8154e2621a5074a008 27.15MB / 27.15MB  2.0s
+    => => sha256:2f746edc7f5a90ff637067db7635196acdf5dd52be3b1a1a 2.77MB / 2.77MB  0.6s
+    => => sha256:c994c68310f76ea392638ca5ad76459970e88e877963b8 10.72MB / 10.72MB  1.0s
+    => => sha256:95db858dd3cb0587820edd001cb5fc46715529ed609e5634 1.86kB / 1.86kB  0.0s
+    => => sha256:ab78639b9a19c806df52b44642e5e11ffd6ad01709c721b4 1.37kB / 1.37kB  0.0s
+    => => sha256:e0cda2588a35cc1e1120f6eaf01828625149c8ccc852734efe9f 232B / 232B  1.2s
+    => => sha256:8c7cc0114ed48565918cd34d4f37545ad4c2cf6b49002329 2.64MB / 2.64MB  1.4s
+    => => extracting sha256:ffbb094f4f9e7c61d97c2b409f3e8154e2621a5074a0087d35f18  1.2s
+    => => extracting sha256:2f746edc7f5a90ff637067db7635196acdf5dd52be3b1a1a3e207  0.2s
+    => => extracting sha256:c994c68310f76ea392638ca5ad76459970e88e877963b8e6d2c1b  0.4s
+    => => extracting sha256:e0cda2588a35cc1e1120f6eaf01828625149c8ccc852734efe9fd  0.0s
+    => => extracting sha256:8c7cc0114ed48565918cd34d4f37545ad4c2cf6b4900232995f2c  0.2s
+    => [2/5] WORKDIR /app                                                          0.1s
+    => [3/5] COPY requirements.txt requirements.txt                                0.0s
+    => [4/5] RUN pip3 install -r requirements.txt                                  4.1s
+    => [5/5] COPY . .                                                              0.0s
+    => exporting to image                                                          0.1s
+    => => exporting layers                                                         0.1s
+    => => writing image sha256:ccdc61301c7dc7fa723d7e659dc02cb16b742b174f62044ff6  0.0s
+    => => naming to docker.io/library/python-docker                                0.0s
+   
+   Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
+   ```
+
+   
+
+6. 查看本地镜像
+
+   ```shell
+   $ docker images | grep docker
+   python-docker                        latest                                                  ccdc61301c7d   2 minutes ago   125MB
+   ```
+
+   
+
+7. docker tag
+
+   ```shell
+   $ docker tag python-docker:latest python-docker:v1.0.0
+   (py3-7)  xxx@ShaodeMacBook-Pro  ~/Works/study/docker  docker images
+   REPOSITORY                           TAG                                                     IMAGE ID       CREATED          SIZE
+   python-docker                        latest                                                  ccdc61301c7d   32 minutes ago   125MB
+   python-docker                        v1.0.0                                                  ccdc61301c7d   32 minutes ago   125MB
+   ```
+
+   
+
+8. Docker rmi  python-docker:v1.0.0   删除某个镜像
+
+9. 运行镜像
+
+   ```shell
+   $ docker run python-docker
+    * Environment: production
+      WARNING: This is a development server. Do not use it in a production deployment.
+      Use a production WSGI server instead.
+    * Debug mode: off
+    * Running on all addresses.
+      WARNING: This is a development server. Do not use it in a production deployment.
+    * Running on http://172.17.0.2:5000/ (Press CTRL+C to quit)
+   
+   
+   $ docker run --publish 5001:5000 python-docker
+    * Environment: production
+      WARNING: This is a development server. Do not use it in a production deployment.
+      Use a production WSGI server instead.
+    * Debug mode: off
+    * Running on all addresses.
+      WARNING: This is a development server. Do not use it in a production deployment.
+    * Running on http://172.17.0.2:5000/ (Press CTRL+C to quit)
+   172.17.0.1 - - [15/Dec/2021 10:02:11] "GET / HTTP/1.1" 200 -
+   172.17.0.1 - - [15/Dec/2021 10:02:11] "GET /favicon.ico HTTP/1.1" 404 -
+   
+   
+   # 从宿主机已经可以访问到容器内的东西啦 ^_^
+   $curl -i http://localhost:5001
+   HTTP/1.0 200 OK
+   Content-Type: text/html; charset=utf-8
+   Content-Length: 24
+   Server: Werkzeug/2.0.2 Python/3.8.12
+   Date: Wed, 15 Dec 2021 10:03:08 GMT
+   
+   Hello , Docker Python ! %
+   ```
+
+   
+
+10. 
+
+11. 
+
+12. 
+
+13. 
 
 # 网络
 
