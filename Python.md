@@ -75,12 +75,123 @@ yarl==1.7.2
 zipp @ file:///tmp/build/80754af9/zipp_1633618647012/work
 zope.interface @ file:///opt/concourse/worker/volumes/live/e2e9977a-a3b7-4323-6e48-b61fb3ed115b/volume/zope.interface_1625036168072/work
 
+
+
+# 可以移除文件路径
+pip list --format=freeze > ./requirements.txt
+
+aiofiles==0.8.0
+aiohttp==3.8.0
+aiosignal==1.2.0
+anyio==3.4.0
+asgiref==3.4.1
+async-generator==1.10
+async-timeout==4.0.1
+asynctest==0.13.0
+attrs==21.2.0
+Automat==20.2.0
+autopep8==1.5.7
+bcrypt==3.2.0
+certifi==2021.10.8
+cffi==1.14.6
+charset-normalizer==2.0.7
+click==8.0.3
+constantly==15.1.0
+cryptography==35.0.0
+cssselect==1.1.0
+Deprecated==1.2.13
+et-xmlfile==1.1.0
+fake-useragent==0.1.11
+Faker==9.8.2
+fastapi==0.70.0
+Flask==2.0.2
+frozenlist==1.2.0
+greenlet==1.1.2
+h11==0.12.0
+hyperlink==21.0.0
+hypothesis==6.30.1
+idna==3.2
+importlib-metadata==4.8.1
+incremental==17.5.0
+iniconfig==1.1.1
+itemadapter==0.3.0
+itemloaders==1.0.4
+itsdangerous==2.0.1
+Jinja2==3.0.3
+jmespath==0.10.0
+lxml==4.6.3
+MarkupSafe==2.0.1
+more-itertools==8.8.0
+multidict==5.2.0
+mysql-connector-python==8.0.27
+numpy==1.21.4
+openpyxl==3.0.9
+outcome==1.1.0
+packaging==21.0
+pandas==1.3.4
+parsel==1.5.2
+Pillow==8.4.0
+pip==21.0.1
+pluggy==0.13.1
+Protego==0.1.16
+protobuf==3.19.1
+py==1.10.0
+pyasn1==0.4.8
+pyasn1-modules==0.2.8
+pycodestyle==2.7.0
+pycparser==2.20
+pydantic==1.8.2
+PyDispatcher==2.0.5
+PyHamcrest==2.0.2
+PyMySQL==1.0.2
+pyOpenSSL==21.0.0
+pyparsing==2.4.7
+pytest==6.2.4
+pytest-runner==5.3.1
+python-dateutil==2.8.2
+pytz==2021.3
+queuelib==1.5.0
+redis==4.0.2
+requests==2.26.0
+Scrapy==2.4.1
+scrapy-fake-useragent==1.4.4
+scrapy-mysql-pipeline==2019.7.19
+scrapy-redis==0.7.1
+Scrapy-Redis-BloomFilter==0.8.1
+scrapyd==1.2.1
+selenium==4.1.0
+service-identity==18.1.0
+setuptools==58.0.4
+six==1.16.0
+sniffio==1.2.0
+sortedcontainers==2.4.0
+starlette==0.16.0
+text-unidecode==1.3
+toml==0.10.2
+trio==0.19.0
+trio-websocket==0.9.2
+Twisted==21.2.0
+typing-extensions==3.10.0.2
+urllib3==1.26.7
+uvicorn==0.15.0
+w3lib==1.21.0
+Werkzeug==2.0.2
+wheel==0.37.0
+wrapt==1.13.3
+wsproto==1.0.0
+yarl==1.7.2
+zipp==3.6.0
+zope.interface==5.4.0
+
 ```
 
 2. 项目运行环境安装 requirement.txt 所包含的依赖
 
    ```shell
    pip install -r requirement.txt
+   
+   #  pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
+   pip install --default-timeout=1000 --no-cache-dir -r requirements.txt
    ```
 
    
@@ -130,7 +241,7 @@ by running conda init? [yes|no]
 You have chosen to not have conda modify your shell scripts at all.
 To activate conda's base environment in your current shell session:
 
-##### 加入环境变量
+##### 加入环境变量   eval "$(/root/anaconda3/bin/conda shell.bash hook)"
 eval "$(/root/anaconda3/bin/conda shell.YOUR_SHELL_NAME hook)"
 
 To install conda's shell functions for easier access, first activate, then:
@@ -153,6 +264,10 @@ tools at your fingertips.
 
 PyCharm Pro for Anaconda is available at: https://www.anaconda.com/pycharm
 """
+
+
+# 创建3.7环境 
+conda create -n py3-7 python=3.7 创建一个新环境 python版本为3.7 环境名称为 py3-7
 ```
 
 

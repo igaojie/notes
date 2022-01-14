@@ -33,6 +33,213 @@ You can start your first spider with:
     
 ```
 
+### Centos 跑Selenium
+
+```python
+(py3-7) [root@localhost kuaishouapi]# python browser.py
+Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 {}
+browser.py:36: DeprecationWarning: executable_path has been deprecated, please pass in a Service object
+  driver = webdriver.Chrome('./chromedriver',options=options)
+Traceback (most recent call last):
+  File "browser.py", line 51, in <module>
+    b.open()
+  File "browser.py", line 36, in open
+    driver = webdriver.Chrome('./chromedriver',options=options)
+  File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chrome/webdriver.py", line 73, in __init__
+    service_log_path, service, keep_alive)
+  File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chromium/webdriver.py", line 90, in __init__
+    self.service.start()
+  File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 98, in start
+    self.assert_process_still_running()
+  File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 112, in assert_process_still_running
+    % (self.path, return_code)
+selenium.common.exceptions.WebDriverException: Message: Service ./chromedriver unexpectedly exited. Status code was: 127
+
+```
+
+1. DeprecationWarning: executable_path has been deprecated, please pass in a Service object  
+
+   ```python
+   # pip install webdriver-manager
+   from selenium import webdriver
+   from selenium.webdriver.chrome.service import Service
+   from webdriver_manager.chrome import ChromeDriverManager
+   from selenium.webdriver.common.by import By
+   
+   s=Service(ChromeDriverManager().install()) # 传service对象即可。
+   driver = webdriver.Chrome(service=s)
+   driver.maximize_window()
+   driver.get('https://www.google.com')
+   ```
+
+   
+
+2. selenium.common.exceptions.WebDriverException: Message: Service ./chromedriver unexpectedly exited. Status code was: 127
+
+   ```shell
+   (py3-7) [root@localhost kuaishouapi]# python browser.py
+   Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 {}
+   
+   
+   ====== WebDriver manager ======
+   Could not get version for google-chrome with the any command: google-chrome --version || google-chrome-stable --version
+   Current google-chrome version is UNKNOWN
+   Get LATEST chromedriver version for UNKNOWN google-chrome
+   Driver [/root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver] found in cache
+   Traceback (most recent call last):
+     File "browser.py", line 56, in <module>
+       b.open()
+     File "browser.py", line 41, in open
+       driver = webdriver.Chrome(service=service,options=options)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chrome/webdriver.py", line 73, in __init__
+       service_log_path, service, keep_alive)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chromium/webdriver.py", line 90, in __init__
+       self.service.start()
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 98, in start
+       self.assert_process_still_running()
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/common/service.py", line 112, in assert_process_still_running
+       % (self.path, return_code)
+   selenium.common.exceptions.WebDriverException: Message: Service /root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver unexpectedly exited. Status code was: 127
+   
+   命令行执行：/root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver 
+   
+   /root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver
+   
+   # /root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver: error while loading shared libraries: libxcb.so.1: cannot open shared object file: No such file or directory
+   说明需要 libxcb.so.1 这个库。安装即可。
+   
+   yum install libxcb
+   
+   
+   安装之后，重新执行
+   
+   /root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver --version
+   ChromeDriver 97.0.4692.71 (adefa7837d02a07a604c1e6eff0b3a09422ab88d-refs/branch-heads/4692@{#1247})
+   
+   这样即可，不会早报错 127 错误了。
+   ```
+
+   
+
+3. selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
+
+   ```shell
+   ====== WebDriver manager ======
+   Could not get version for google-chrome with the any command: google-chrome --version || google-chrome-stable --version
+   Current google-chrome version is UNKNOWN
+   Get LATEST chromedriver version for UNKNOWN google-chrome
+   Driver [/root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver] found in cache
+   Traceback (most recent call last):
+     File "browser.py", line 56, in <module>
+       b.open()
+     File "browser.py", line 41, in open
+       driver = webdriver.Chrome(service=service,options=options)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chrome/webdriver.py", line 73, in __init__
+       service_log_path, service, keep_alive)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chromium/webdriver.py", line 99, in __init__
+       options=options)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py", line 268, in __init__
+       self.start_session(capabilities, browser_profile)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py", line 359, in start_session
+       response = self.execute(Command.NEW_SESSION, parameters)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py", line 424, in execute
+       self.error_handler.check_response(response)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py", line 247, in check_response
+       raise exception_class(message, screen, stacktrace)
+   selenium.common.exceptions.WebDriverException: Message: unknown error: cannot find Chrome binary
+   Stacktrace:
+   #0 0x564762a46a23 <unknown>
+   #1 0x564762511e18 <unknown>
+   #2 0x56476253314b <unknown>
+   #3 0x56476253091a <unknown>
+   #4 0x56476256b74a <unknown>
+   #5 0x564762565883 <unknown>
+   #6 0x56476253b3fa <unknown>
+   #7 0x56476253c4c5 <unknown>
+   #8 0x564762a7616d <unknown>
+   #9 0x564762a8c5bb <unknown>
+   #10 0x564762a77e75 <unknown>
+   #11 0x564762a8ce85 <unknown>
+   #12 0x564762a6b86f <unknown>
+   #13 0x564762aa7ae8 <unknown>
+   #14 0x564762aa7c68 <unknown>
+   #15 0x564762ac2aad <unknown>
+   #16 0x7f69b4b06ea5 <unknown>
+   
+   
+   
+   ```
+
+   解决方案：安装Chrome 浏览器
+
+   ```shell
+   # wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+   # yum localinstall google-chrome-stable_current_x86_64.rpm
+   
+   /usr/bin/google-chrome --version
+   Google Chrome 97.0.4692.71
+   ```
+
+4. unknown error: DevToolsActivePort file doesn't exist
+
+   ```shell
+   python browser.py
+   Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36 {}
+   
+   
+   ====== WebDriver manager ======
+   Current google-chrome version is 97.0.4692
+   Get LATEST chromedriver version for 97.0.4692 google-chrome
+   Driver [/root/.wdm/drivers/chromedriver/linux64/97.0.4692.71/chromedriver] found in cache
+   Traceback (most recent call last):
+     File "browser.py", line 60, in <module>
+       b.open()
+     File "browser.py", line 44, in open
+       '--log-path=./selenium.log'
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chrome/webdriver.py", line 73, in __init__
+       service_log_path, service, keep_alive)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/chromium/webdriver.py", line 99, in __init__
+       options=options)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py", line 268, in __init__
+       self.start_session(capabilities, browser_profile)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py", line 359, in start_session
+       response = self.execute(Command.NEW_SESSION, parameters)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py", line 424, in execute
+       self.error_handler.check_response(response)
+     File "/root/anaconda3/envs/py3-7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py", line 247, in check_response
+       raise exception_class(message, screen, stacktrace)
+   selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: crashed.
+     (unknown error: DevToolsActivePort file doesn't exist)
+     (The process started from chrome location /usr/bin/google-chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+   Stacktrace:
+   #0 0x5577a2bcba23 <unknown>
+   #1 0x5577a2696e18 <unknown>
+   #2 0x5577a26ba1f1 <unknown>
+   #3 0x5577a26b591a <unknown>
+   #4 0x5577a26f074a <unknown>
+   #5 0x5577a26ea883 <unknown>
+   #6 0x5577a26c03fa <unknown>
+   #7 0x5577a26c14c5 <unknown>
+   #8 0x5577a2bfb16d <unknown>
+   #9 0x5577a2c115bb <unknown>
+   #10 0x5577a2bfce75 <unknown>
+   #11 0x5577a2c11e85 <unknown>
+   #12 0x5577a2bf086f <unknown>
+   #13 0x5577a2c2cae8 <unknown>
+   #14 0x5577a2c2cc68 <unknown>
+   #15 0x5577a2c47aad <unknown>
+   #16 0x7f98af2e9ea5 <unknown>
+   
+   
+   ```
+
+   解决方案： 开启无头模式
+
+   ```py
+   options.add_argument('--headless')
+
+5. 
+
 ### 创建爬虫
 
 ```shell
