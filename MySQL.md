@@ -218,11 +218,47 @@
 
       
 
-   2. 22
+   2. mysqld_multi reload start stop不起作用的情况分析：
 
-   3. 22
+      1. mysqld_multi 账号和密码不正确。
 
+      2. cn.cnf 配置文件(https://bugs.mysql.com/bug.php?id=77227)
+   
+         ```shell
+         [mysqld_multi]
+         mysqld     = /www/server/mysql/bin/mysqld_safe
+         mysqladmin = /www/server/mysql/bin/mysqladmin
+         user       = multi_admin
+         password   = my_password # 看上面的那个页面 有人提到这个问题，改成下边的方式就好了。
+         pass = my_password
+         ```
+   
+         
+   
+   3. PHP5.6 Error: Unable to connect to MySQL. Debugging errno: 2054 Debugging error: Server sent charset unknown to the client. Please, report to the developers。https://stackoverflow.com/questions/43437490/pdo-construct-server-sent-charset-255-unknown-to-the-client-please-rep
+   
+      ```shell
+      [client]
+      default-character-set=utf8
+      
+      [mysql]
+      default-character-set=utf8
+      
+      
+      [mysqld]
+      collation-server = utf8_unicode_ci
+      character-set-server = utf8
+      
+      # 切记一定要重启mysql服务。
+      ```
+   
+      
+   
    4. 
+   
+   5. 22
+   
+   6. 
 
 # Master-Slave 主从同步
 
@@ -993,7 +1029,31 @@ MySQL server from group: mysqld3308 is running
 
 
 
+# 	SQL
+
+## SQL_MODEL
+
+1. sql_mode=only_full_group_by
+
 # ALTER
+
+## 字符集
+
+1. 修改数据表与表中字段的编码及字符集
+
+```mysql
+
+SELECT 
+CONCAT("ALTER TABLE `", TABLE_NAME,"` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;") 
+AS target_tables
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA="数据库名字"
+AND TABLE_TYPE="BASE TABLE";
+
+上面语句会生成库里所有的表需要修改编码和字符集的SQL语句。
+```
+
+
 
 ## ADD
 
@@ -1226,6 +1286,10 @@ Using:
 --verbose          Be more verbose.
 --version          Print the version number and exit.
 ```
+
+
+
+
 
 ## 常用命令
 

@@ -1,3 +1,13 @@
+# 编码
+
+```python
+# -*- coding: UTF-8 -*-
+
+# Python3.X 源码文件默认使用utf-8编码，所以可以正常解析中文，无需指定 UTF-8 编码。
+```
+
+
+
 # requirement.txt
 
 1. 把环境中的依赖写入 requirement.txt 中 https://pip.pypa.io/en/stable/cli/pip_install/
