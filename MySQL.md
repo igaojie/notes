@@ -337,7 +337,7 @@
    
    # 执行 xtrabackup --prepare 
    
-   # xtrabackup --prepare --host=127.0.0.1 --user=root --password='1db81ea576e76d9e' --port=3308 --target-dir=./x_backup
+   # xtrabackup --prepare --host=127.0.0.1 --user=root --password='YOURPASSWORD' --port=3308 --target-dir=./x_backup
    xtrabackup: recognized server arguments: --innodb_checksum_algorithm=crc32 --innodb_log_checksums=1 --innodb_data_file_path=ibdata1:10M:autoextend --innodb_log_files_in_group=2 --innodb_log_file_size=50331648 --innodb_page_size=16384 --innodb_undo_directory=./ --innodb_undo_tablespaces=2 --server-id=0 --innodb_log_checksums=ON --innodb_redo_log_encrypt=0 --innodb_undo_log_encrypt=0
    xtrabackup: recognized client arguments: --prepare=1 --host=127.0.0.1 --user=root --password=* --port=3308 --target-dir=./x_backup
    xtrabackup version 8.0.26-18 based on MySQL server 8.0.26 Linux (x86_64) (revision id: 4aecf82)
