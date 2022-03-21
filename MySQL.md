@@ -291,6 +291,7 @@
    # 参考 Xtrabackup 章节。
    
    # 继续进行全量备份。
+   # 第一步：：：
    (base) [root@localhost backup]# xtrabackup --backup --host=127.0.0.1 --user=root --password='1db81ea576e76d9e' --port=3308 --target-dir=./x_backup
    .................
    xtrabackup: recognized client arguments: --port=3306 --socket=/tmp/mysql.sock --backup=1 --host=127.0.0.1 --user=root --password=* --port=3308 --target-dir=./x_backup
@@ -334,7 +335,7 @@
    211119 20:53:11 completed OK!
    ...........
    
-   
+   # 第二步：：：
    # 执行 xtrabackup --prepare 
    
    # xtrabackup --prepare --host=127.0.0.1 --user=root --password='YOURPASSWORD' --port=3308 --target-dir=./x_backup
