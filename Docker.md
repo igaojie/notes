@@ -289,6 +289,43 @@ OS/Arch:      linux/amd64
 
 
 
+## 修改工作目录
+
+docker安装时如果不指定目录（也就是工作目录），一般默认工作目录是 /var/lib/docker ，很多时候需要修改到大容量磁盘上进行存储，这里记录一下修改默认路径为 /data/docker 。
+
+1. 添加并配置 /etc/docker/daemon.json 文件
+
+   ```shell
+   docker info |grep "Docker Root Dir" # 可查看目前的工作目录
+   
+   vim /etc/docker/daemon.json #如果不存在 就创建
+   
+   {
+       "data-root": "/data/docker"
+   }
+   
+   重启：  systemctl restart docker 
+   
+   ```
+
+2. 修改systemd管理的docker服务文件 /usr/lib/systemd/system/docker.service 
+
+   ```shell
+   vim /usr/lib/systemd/system/docker.service
+   
+   # 新增 --data-root=/data/docker
+   ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --data-root=/data/docker
+   
+   
+   
+   # 重启
+    systemctl daemon-reload 
+   
+    systemctl restart docker 
+   ```
+
+   
+
 # 基本命令
 
 ## docker run
@@ -993,4 +1030,162 @@ net.ipv4.ip_forward = 1
 1. POD 概念
    1. Zizhu
 2. 网络通讯
+
+
+
+# Docker Elk
+
+```shell
+https://github.com/deviantony/docker-elk
+```
+
+## 1. 安装
+
+```shell
+ wget https://github.com/deviantony/docker-elk/archive/refs/heads/main.zip
+ mv main.zip docker-elk.zip
+ unzip docker-elk.zip
+
+# 进入目录
+cd docker-elk-main/
+
+# 如果安装好了docker-compose 可以跳过下一步
+ curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+ sudo chmod +x /usr/local/bin/docker-compose
+
+#启动
+ docker-compose up -d
+ 
+ docker-compose up -d
+Creating network "docker-elk-main_elk" with driver "bridge"
+Creating volume "docker-elk-main_setup" with default driver
+Creating volume "docker-elk-main_elasticsearch" with default driver
+Building setup
+Sending build context to Docker daemon  11.78kB
+Step 1/7 : ARG ELASTIC_VERSION
+Step 2/7 : FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+8.1.1: Pulling from elasticsearch/elasticsearch
+b37644e60321: Extracting [===============================================>   ]  30.47MB/31.79MB
+b37644e60321: Pull complete
+354d16e66fce: Pull complete
+176322f4a06e: Pull complete
+657b9785b0a4: Pull complete
+9fbb74d281bc: Pull complete
+2058679daf64: Pull complete
+57aa30bb24b8: Pull complete
+a5dbb6b35be5: Pull complete
+0b9204bfafb2: Pull complete
+Digest: sha256:2b75a3e2d4a296682dd598415b8921c931059562bbbf29c1e5c0d9c342d2a301
+Status: Downloaded newer image for docker.elastic.co/elasticsearch/elasticsearch:8.1.1
+ ---> ad7374c81155
+Step 3/7 : USER root
+ ---> Running in df1e62299009
+Removing intermediate container df1e62299009
+ ---> b78641b8e344
+Step 4/7 : COPY . /
+ ---> 8ac009aa323b
+Step 5/7 : RUN set -eux; 	mkdir /state; 	chown elasticsearch /state; 	chmod +x /entrypoint.sh
+ ---> Running in da23e8556099
++ mkdir /state
++ chown elasticsearch /state
++ chmod +x /entrypoint.sh
+Removing intermediate container da23e8556099
+ ---> 11f63b4425c2
+Step 6/7 : USER elasticsearch:root
+ ---> Running in 91900b938900
+Removing intermediate container 91900b938900
+ ---> 016bc77532ed
+Step 7/7 : ENTRYPOINT ["/entrypoint.sh"]
+ ---> Running in 1c2cde33cb19
+Removing intermediate container 1c2cde33cb19
+ ---> 9b487dfe7136
+Successfully built 9b487dfe7136
+Successfully tagged docker-elk-main_setup:latest
+WARNING: Image for service setup was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Building elasticsearch
+Sending build context to Docker daemon  4.608kB
+Step 1/2 : ARG ELASTIC_VERSION
+Step 2/2 : FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+ ---> ad7374c81155
+Successfully built ad7374c81155
+Successfully tagged docker-elk-main_elasticsearch:latest
+WARNING: Image for service elasticsearch was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Building logstash
+Sending build context to Docker daemon  6.144kB
+Step 1/2 : ARG ELASTIC_VERSION
+Step 2/2 : FROM docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
+8.1.1: Pulling from logstash/logstash
+b37644e60321: Already exists
+63650da27f21: Pull complete
+010afd3d3417: Pull complete
+9bd4dbe685a1: Pull complete
+9f771a6be53c: Pull complete
+769a900c2d41: Pull complete
+219fb01d12f8: Pull complete
+2d4f5b5a43e8: Pull complete
+9cf866ea5379: Pull complete
+6217d881ff54: Pull complete
+0cf9245e2503: Pull complete
+Digest: sha256:a09e0272969413b27ba1c6de2b1efecf73175f1a5b5a4d559f090cc5c36b6378
+Status: Downloaded newer image for docker.elastic.co/logstash/logstash:8.1.1
+ ---> 9669367812d1
+Successfully built 9669367812d1
+Successfully tagged docker-elk-main_logstash:latest
+WARNING: Image for service logstash was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Building kibana
+Sending build context to Docker daemon  4.608kB
+Step 1/2 : ARG ELASTIC_VERSION
+Step 2/2 : FROM docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
+8.1.1: Pulling from kibana/kibana
+b37644e60321: Already exists
+0cbdd2e12c63: Pull complete
+0f736544c452: Pull complete
+ead9e8815713: Pull complete
+07a78adf1047: Pull complete
+8deae88e9fa2: Pull complete
+178902b0f17d: Pull complete
+993ff4cd0b25: Pull complete
+d0e16a001008: Pull complete
+184b7127f82f: Pull complete
+4cc04c22891d: Pull complete
+a27502b5fdfd: Pull complete
+9724e2d22e6c: Pull complete
+Digest: sha256:9a402a5acd270c18cf25b7c83185c5fa08ca575d3243cf0edbf54cee397d7ecb
+Status: Downloaded newer image for docker.elastic.co/kibana/kibana:8.1.1
+ ---> d567696c16b3
+Successfully built d567696c16b3
+Successfully tagged docker-elk-main_kibana:latest
+WARNING: Image for service kibana was built because it did not already exist. To rebuild this image you must use `docker-compose build` or `docker-compose up --build`.
+Creating docker-elk-main_setup_1         ... done
+Creating docker-elk-main_elasticsearch_1 ... done
+Creating docker-elk-main_kibana_1        ... done
+Creating docker-elk-main_logstash_1      ... done
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+## 
+
+
+
+
+
+
+
+
+
+
+
+
 
