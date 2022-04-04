@@ -1,4 +1,4 @@
-# 安装
+# 安装 
 
 ## docker 安装
 
@@ -1053,5 +1053,234 @@ curl -XPOST http://localhost:9200/article_post/_update/1 -H 'Content-Type:applic
   "mid":0,
   "platform":1
 }'
+```
+
+# 健康监测
+
+## 查询健康状态
+
+```shell
+curl http://localhost:9200/_cluster/health
+{
+	"error": {
+		"root_cause": [{
+			"type": "security_exception",
+			"reason": "missing authentication credentials for REST request [/_cluster/health]",
+			"header": {
+				"WWW-Authenticate": ["Basic realm=\"security\" charset=\"UTF-8\"", "ApiKey"] #需要验证
+			}
+		}],
+		"type": "security_exception",
+		"reason": "missing authentication credentials for REST request [/_cluster/health]",
+		"header": {
+			"WWW-Authenticate": ["Basic realm=\"security\" charset=\"UTF-8\"", "ApiKey"]
+		}
+	},
+	"status": 401
+}
+
+[root@xinqiao docker-elk-main]#
+[root@xinqiao docker-elk-main]#
+
+[root@xinqiao docker-elk-main]# curl http://localhost:9200/_cluster/health -u elastic:changeme
+{
+	"cluster_name": "docker-cluster",
+	"status": "yellow", # 状态
+	"timed_out": false,
+	"number_of_nodes": 1,
+	"number_of_data_nodes": 1,
+	"active_primary_shards": 16,
+	"active_shards": 16,
+	"relocating_shards": 0,
+	"initializing_shards": 0,
+	"unassigned_shards": 1,
+	"delayed_unassigned_shards": 0,
+	"number_of_pending_tasks": 0,
+	"number_of_in_flight_fetch": 0,
+	"task_max_waiting_in_queue_millis": 0,
+	"active_shards_percent_as_number": 94.11764705882352
+}
+
+curl http://localhost:9200/_cluster/health?level=indices -u elastic:changeme
+
+{
+	"cluster_name": "docker-cluster",
+	"status": "yellow",
+	"timed_out": false,
+	"number_of_nodes": 1,
+	"number_of_data_nodes": 1,
+	"active_primary_shards": 16,
+	"active_shards": 16,
+	"relocating_shards": 0,
+	"initializing_shards": 0,
+	"unassigned_shards": 1,
+	"delayed_unassigned_shards": 0,
+	"number_of_pending_tasks": 0,
+	"number_of_in_flight_fetch": 0,
+	"task_max_waiting_in_queue_millis": 0,
+	"active_shards_percent_as_number": 94.11764705882352,
+	"indices": {
+		".ds-.logs-deprecation.elasticsearch-default-2022.03.31-000001": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".apm-agent-configuration": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".kibana_security_session_1": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".kibana_8.1.1_001": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".kibana-event-log-8.1.1-000001": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		"kibana_sample_data_flights": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".tasks": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".geoip_databases": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".security-7": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		"testindex": {
+			"status": "yellow",# 找到哪个索引是 yellow
+			"number_of_shards": 1,
+			"number_of_replicas": 1,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 1
+		},
+		".apm-custom-link": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		"kibana_sample_data_ecommerce": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".kibana_task_manager_8.1.1_001": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		"kibana_sample_data_logs": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".async-search": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		},
+		".ds-ilm-history-5-2022.03.31-000001": {
+			"status": "green",
+			"number_of_shards": 1,
+			"number_of_replicas": 0,
+			"active_primary_shards": 1,
+			"active_shards": 1,
+			"relocating_shards": 0,
+			"initializing_shards": 0,
+			"unassigned_shards": 0
+		}
+	}
+}
 ```
 

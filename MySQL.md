@@ -988,6 +988,122 @@ For more information, please visit:
    
 8. 如何让两个版本共存？percona-xtrabackup-80能否处理 低版本的mysql的备份恢复呢？疑问？
 
+
+
+## 安装异常情况
+
+```shell
+https://www.percona.com/doc/percona-xtrabackup/2.4/installation/yum_repo.html
+
+yum install https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+上次元数据过期检查：1:11:40 前，执行于 2022年04月03日 星期日 08时19分03秒。
+percona-release-latest.noarch.rpm                         17 kB/s |  20 kB     00:01
+依赖关系解决。
+=========================================================================================
+ 软件包                   架构            版本               仓库                   大小
+=========================================================================================
+安装:
+ percona-release          noarch          1.0-27             @commandline           20 k
+
+事务概要
+=========================================================================================
+安装  1 软件包
+
+总计：20 k
+安装大小：32 k
+确定吗？[y/N]： y
+下载软件包：
+运行事务检查
+事务检查成功。
+运行事务测试
+事务测试成功。
+运行事务
+  准备中  :                                                                          1/1
+  安装    : percona-release-1.0-27.noarch                                            1/1
+  运行脚本: percona-release-1.0-27.noarch                                            1/1
+错误：无法创建 事务 锁定于 /var/lib/rpm/.rpm.lock (资源暂时不可用)
+错误：/etc/pki/rpm-gpg/RPM-GPG-KEY-Percona：导入密钥 1 失败。
+Specified repository is not supported for current operating system!
+Specified repository is not supported for current operating system!
+The percona-release package now contains a percona-release script that can enable additional repositories for our newer products.
+
+For example, to enable the Percona Server 8.0 repository use:
+
+  percona-release setup ps80
+
+Note: To avoid conflicts with older product versions, the percona-release setup command may disable our original repository for some products.
+
+For more information, please visit:
+  https://www.percona.com/doc/percona-repo-config/percona-release.html
+
+
+  验证    : percona-release-1.0-27.noarch                                            1/1
+
+已安装:
+  percona-release-1.0-27.noarch
+
+完毕！
+[root@xinqiao ~]# yum list | grep percona
+percona-release.noarch                                            1.0-27                                          @@commandline
+[root@xinqiao ~]# percona-release enable-only tools release
+Specified repository is not supported for current operating system!  $$$$$竟然提示不支持！！！！！！！ 
+[root@xinqiao ~]#
+[root@xinqiao ~]#
+
+那只能源码安装了
+
+
+# 下载rpm包
+ wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.4/\
+> binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm
+--2022-04-03 09:34:05--  https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.4/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm
+正在解析主机 www.percona.com (www.percona.com)... 172.67.8.157, 104.22.8.28, 104.22.9.28, ...
+正在连接 www.percona.com (www.percona.com)|172.67.8.157|:443... 已连接。
+已发出 HTTP 请求，正在等待回应... 301 Moved Permanently
+位置：https://downloads.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.4/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm [跟随至新的 URL]
+--2022-04-03 09:34:07--  https://downloads.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.4/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm
+正在解析主机 downloads.percona.com (downloads.percona.com)... 162.220.4.222, 162.220.4.221, 74.121.199.231
+正在连接 downloads.percona.com (downloads.percona.com)|162.220.4.222|:443... 已连接。
+已发出 HTTP 请求，正在等待回应... 200 OK
+长度：7839980 (7.5M) [application/octet-stream]
+正在保存至: “percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm”
+
+percona-xtrabackup-24- 100%[=========================>]   7.48M  3.13MB/s  用时 2.4s
+
+2022-04-03 09:34:10 (3.13 MB/s) - 已保存 “percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm” [7839980/7839980])
+
+# 也不行啊 要求libgcrypt的版本。 
+yum localinstall percona-xtrabackup-24-2.4.4-1.el7.x86_64.rpm
+上次元数据过期检查：1:17:09 前，执行于 2022年04月03日 星期日 08时19分03秒。
+错误：
+ 问题: conflicting requests
+  - nothing provides libgcrypt.so.11()(64bit) needed by percona-xtrabackup-24-2.4.4-1.el7.x86_64
+  - nothing provides libgcrypt.so.11(GCRYPT_1.2)(64bit) needed by percona-xtrabackup-24-2.4.4-1.el7.x86_64
+(尝试添加 '--skip-broken' 来跳过无法安装的软件包 或 '--nobest' 来不只使用软件包的最佳候选)
+
+
+# 试着从官网找找能不能找到？
+https://www.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.14/binary/tarball/
+
+# 下个试试
+wget https://downloads.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.18/binary/tarball/percona-xtrabackup-2.4.18-Linux-x86_64.libgcrypt183.tar.gz
+tar xf percona-xtrabackup-2.4.18-Linux-x86_64.libgcrypt183.tar.gz
+ cd percona-xtrabackup-2.4.18-Linux-x86_64/
+ tar xf percona-xtrabackup-2.4.18-Linux-x86_64.libgcrypt183.tar.gz
+ mv percona-xtrabackup-2.4.18-Linux-x86_64 /usr/local/xtrabackup
+ echo "export PATH=$PATH:/usr/local/xtrabackup/bin" >> /etc/profile
+ source /etc/profile
+ xtrabackup --version
+ 
+ 
+ xtrabackup --version
+xtrabackup: recognized server arguments: --datadir=/data/www/server/data3306 --open_files_limit=65535 --log_bin=mysql-bin --server-id=1 --innodb_data_home_dir=/data/www/server/data3306 --innodb_data_file_path=ibdata1:10M:autoextend --innodb_log_group_home_dir=/data/www/server/data3306 --innodb_buffer_pool_size=256M --innodb_log_file_size=128M --innodb_log_buffer_size=32M --innodb_flush_log_at_trx_commit=1 --innodb_max_dirty_pages_pct=90 --innodb_read_io_threads=2 --innodb_write_io_threads=2
+xtrabackup version 2.4.18 based on MySQL server 5.7.26 Linux (x86_64) (revision id: 29b4ca5)
+
+```
+
+
+
 ## 备份
 
 ### 检查主库
@@ -1289,6 +1405,414 @@ Using:
 ```
 
 
+
+# innobackupex
+
+```shell
+innobackupex -help
+Options:
+    --apply-log
+        Prepare a backup in BACKUP-DIR by applying the transaction log file
+        named "xtrabackup_logfile" located in the same directory. Also,
+        create new transaction logs. The InnoDB configuration is read from
+        the file "backup-my.cnf".
+
+    --compact
+        Create a compact backup with all secondary index pages omitted. This
+        option is passed directly to xtrabackup. See xtrabackup
+        documentation for details.
+
+    --compress
+        This option instructs xtrabackup to compress backup copies of InnoDB
+        data files. It is passed directly to the xtrabackup child process.
+        Try 'xtrabackup --help' for more details.
+
+    --compress-threads
+        This option specifies the number of worker threads that will be used
+        for parallel compression. It is passed directly to the xtrabackup
+        child process. Try 'xtrabackup --help' for more details.
+
+    --compress-chunk-size
+        This option specifies the size of the internal working buffer for
+        each compression thread, measured in bytes. It is passed directly to
+        the xtrabackup child process. Try 'xtrabackup --help' for more
+        details.
+
+    --copy-back
+        Copy all the files in a previously made backup from the backup
+        directory to their original locations.
+
+    --databases=LIST
+        This option specifies the list of databases that innobackupex should
+        back up. The option accepts a string argument or path to file that
+        contains the list of databases to back up. The list is of the form
+        "databasename1[.table_name1] databasename2[.table_name2] . . .". If
+        this option is not specified, all databases containing MyISAM and
+        InnoDB tables will be backed up. Please make sure that --databases
+        contains all of the InnoDB databases and tables, so that all of the
+        innodb.frm files are also backed up. In case the list is very long,
+        this can be specified in a file, and the full path of the file can
+        be specified instead of the list. (See option --tables-file.)
+
+    --decompress
+        Decompresses all files with the .qp extension in a backup previously
+        made with the --compress option.
+
+    --decrypt=ENCRYPTION-ALGORITHM
+        Decrypts all files with the .xbcrypt extension in a backup
+        previously made with --encrypt option.
+
+    --debug-sleep-before-unlock=SECONDS
+        This is a debug-only option used by the XtraBackup test suite.
+
+    --defaults-file=[MY.CNF]
+        This option specifies what file to read the default MySQL options
+        from. The option accepts a string argument. It is also passed
+        directly to xtrabackup's --defaults-file option. See the xtrabackup
+        documentation for details.
+
+    --defaults-group=GROUP-NAME
+        This option specifies the group name in my.cnf which should be used.
+        This is needed for mysqld_multi deployments.
+
+    --defaults-extra-file=[MY.CNF]
+        This option specifies what extra file to read the default MySQL
+        options from before the standard defaults-file. The option accepts a
+        string argument. It is also passed directly to xtrabackup's
+        --defaults-extra-file option. See the xtrabackup documentation for
+        details.
+
+    --encrypt=ENCRYPTION-ALGORITHM
+        This option instructs xtrabackup to encrypt backup copies of InnoDB
+        data files using the algorithm specified in the
+        ENCRYPTION-ALGORITHM. It is passed directly to the xtrabackup child
+        process. Try 'xtrabackup --help' for more details.
+
+    --encrypt-key=ENCRYPTION-KEY
+        This option instructs xtrabackup to use the given ENCRYPTION-KEY
+        when using the --encrypt or --decrypt options. During backup it is
+        passed directly to the xtrabackup child process. Try 'xtrabackup
+        --help' for more details.
+
+    --encrypt-key-file=ENCRYPTION-KEY-FILE
+        This option instructs xtrabackup to use the encryption key stored in
+        the given ENCRYPTION-KEY-FILE when using the --encrypt or --decrypt
+        options.
+
+        Try 'xtrabackup --help' for more details.
+
+    --encrypt-threads
+        This option specifies the number of worker threads that will be used
+        for parallel encryption. It is passed directly to the xtrabackup
+        child process. Try 'xtrabackup --help' for more details.
+
+    --encrypt-chunk-size
+        This option specifies the size of the internal working buffer for
+        each encryption thread, measured in bytes. It is passed directly to
+        the xtrabackup child process. Try 'xtrabackup --help' for more
+        details.
+
+    --export
+        This option is passed directly to xtrabackup's --export option. It
+        enables exporting individual tables for import into another server.
+        See the xtrabackup documentation for details.
+
+    --extra-lsndir=DIRECTORY
+        This option specifies the directory in which to save an extra copy
+        of the "xtrabackup_checkpoints" file. The option accepts a string
+        argument. It is passed directly to xtrabackup's --extra-lsndir
+        option. See the xtrabackup documentation for details.
+
+        ==item --force-non-empty-directories
+
+        This option, when specified, makes --copy-back or --move-back
+        transfer files to non-empty directories. Note that no existing files
+        will be overwritten. If --copy-back or --nove-back has to copy a
+        file from the backup directory which already exists in the
+        destination directory, it will still fail with an error.
+
+    --galera-info
+        This options creates the xtrabackup_galera_info file which contains
+        the local node state at the time of the backup. Option should be
+        used when performing the backup of Percona-XtraDB-Cluster.
+
+    --help
+        This option displays a help screen and exits.
+
+    --history=NAME
+        This option enables the tracking of backup history in the
+        PERCONA_SCHEMA.xtrabackup_history table. An optional history series
+        name may be specified that will be placed with the history record
+        for the current backup being taken.
+
+    --host=HOST
+        This option specifies the host to use when connecting to the
+        database server with TCP/IP. The option accepts a string argument.
+        It is passed to the mysql child process without alteration. See
+        mysql --help for details.
+
+    --ibbackup=IBBACKUP-BINARY
+        This option specifies which xtrabackup binary should be used. The
+        option accepts a string argument. IBBACKUP-BINARY should be the
+        command used to run XtraBackup. The option can be useful if the
+        xtrabackup binary is not in your search path or working directory.
+        If this option is not specified, innobackupex attempts to determine
+        the binary to use automatically. By default, "xtrabackup" is the
+        command used. However, when option --copy-back is specified,
+        "xtrabackup_51" is the command used. And when option --apply-log is
+        specified, the binary is used whose name is in the file
+        "xtrabackup_binary" in the backup directory, if that file exists.
+
+    --include=REGEXP
+        This option is a regular expression to be matched against table
+        names in databasename.tablename format. It is passed directly to
+        xtrabackup's --tables option. See the xtrabackup documentation for
+        details.
+
+    --incremental
+        This option tells xtrabackup to create an incremental backup, rather
+        than a full one. It is passed to the xtrabackup child process. When
+        this option is specified, either --incremental-lsn or
+        --incremental-basedir can also be given. If neither option is given,
+        option --incremental-basedir is passed to xtrabackup by default, set
+        to the first timestamped backup directory in the backup base
+        directory.
+
+    --incremental-basedir=DIRECTORY
+        This option specifies the directory containing the full backup that
+        is the base dataset for the incremental backup. The option accepts a
+        string argument. It is used with the --incremental option.
+
+    --incremental-dir=DIRECTORY
+        This option specifies the directory where the incremental backup
+        will be combined with the full backup to make a new full backup. The
+        option accepts a string argument. It is used with the --incremental
+        option.
+
+    --incremental-history-name=NAME
+        This option specifies the name of the backup series stored in the
+        PERCONA_SCHEMA.xtrabackup_history history record to base an
+        incremental backup on. Xtrabackup will search the history table
+        looking for the most recent (highest innodb_to_lsn), successful
+        backup in the series and take the to_lsn value to use as the
+        starting lsn for the incremental backup. This will be mutually
+        exclusive with --incremental-history-uuid, --incremental-basedir and
+        --incremental-lsn. If no valid lsn can be found (no series by that
+        name, no successful backups by that name) xtrabackup will return
+        with an error. It is used with the --incremental option.
+
+    --incremental-history-uuid=UUID
+        This option specifies the UUID of the specific history record stored
+        in the PERCONA_SCHEMA.xtrabackup_history to base an incremental
+        backup on. --incremental-history-name, --incremental-basedir and
+        --incremental-lsn. If no valid lsn can be found (no success record
+        with that uuid) xtrabackup will return with an error. It is used
+        with the --incremental option.
+
+    --incremental-force-scan
+        This options tells xtrabackup to perform full scan of data files for
+        taking an incremental backup even if full changed page bitmap data
+        is available to enable the backup without the full scan.
+
+    --log-copy-interval
+        This option specifies time interval between checks done by log
+        copying thread in milliseconds.
+
+    --incremental-lsn
+        This option specifies the log sequence number (LSN) to use for the
+        incremental backup. The option accepts a string argument. It is used
+        with the --incremental option. It is used instead of specifying
+        --incremental-basedir. For databases created by MySQL and Percona
+        Server 5.0-series versions, specify the LSN as two 32-bit integers
+        in high:low format. For databases created in 5.1 and later, specify
+        the LSN as a single 64-bit integer.
+
+    --kill-long-queries-timeout=SECONDS
+        This option specifies the number of seconds innobackupex waits
+        between starting FLUSH TABLES WITH READ LOCK and killing those
+        queries that block it. Default is 0 seconds, which means
+        innobackupex will not attempt to kill any queries.
+
+    --kill-long-query-type=all|update
+        This option specifies which types of queries should be killed to
+        unblock the global lock. Default is "all".
+
+    --lock-wait-timeout=SECONDS
+        This option specifies time in seconds that innobackupex should wait
+        for queries that would block FTWRL before running it. If there are
+        still such queries when the timeout expires, innobackupex terminates
+        with an error. Default is 0, in which case innobackupex does not
+        wait for queries to complete and starts FTWRL immediately.
+
+    --lock-wait-threshold=SECONDS
+        This option specifies the query run time threshold which is used by
+        innobackupex to detect long-running queries with a non-zero value of
+        --lock-wait-timeout. FTWRL is not started until such long-running
+        queries exist. This option has no effect if --lock-wait-timeout is
+        0. Default value is 60 seconds.
+
+    --lock-wait-query-type=all|update
+        This option specifies which types of queries are allowed to complete
+        before innobackupex will issue the global lock. Default is all.
+
+    --move-back
+        Move all the files in a previously made backup from the backup
+        directory to the actual datadir location. Use with caution, as it
+        removes backup files.
+
+    --no-lock
+        Use this option to disable table lock with "FLUSH TABLES WITH READ
+        LOCK". Use it only if ALL your tables are InnoDB and you DO NOT CARE
+        about the binary log position of the backup. This option shouldn't
+        be used if there are any DDL statements being executed or if any
+        updates are happening on non-InnoDB tables (this includes the system
+        MyISAM tables in the mysql database), otherwise it could lead to an
+        inconsistent backup. If you are considering to use --no-lock because
+        your backups are failing to acquire the lock, this could be because
+        of incoming replication events preventing the lock from succeeding.
+        Please try using --safe-slave-backup to momentarily stop the
+        replication slave thread, this may help the backup to succeed and
+        you then don't need to resort to using this option.
+
+    --no-timestamp
+        This option prevents creation of a time-stamped subdirectory of the
+        BACKUP-ROOT-DIR given on the command line. When it is specified, the
+        backup is done in BACKUP-ROOT-DIR instead.
+
+    --no-version-check
+        This option disables the version check which is enabled by the
+        --version-check option.
+
+    --parallel=NUMBER-OF-THREADS
+        On backup, this option specifies the number of threads the
+        xtrabackup child process should use to back up files concurrently.
+        The option accepts an integer argument. It is passed directly to
+        xtrabackup's --parallel option. See the xtrabackup documentation for
+        details.
+
+        On --decrypt or --decompress it specifies the number of parallel
+        forks that should be used to process the backup files.
+
+    --password=WORD
+        This option specifies the password to use when connecting to the
+        database. It accepts a string argument. It is passed to the mysql
+        child process without alteration. See mysql --help for details.
+
+    --port=PORT
+        This option specifies the port to use when connecting to the
+        database server with TCP/IP. The option accepts a string argument.
+        It is passed to the mysql child process. It is passed to the mysql
+        child process without alteration. See mysql --help for details.
+
+    --rebuild-indexes
+        This option only has effect when used together with the --apply-log
+        option and is passed directly to xtrabackup. When used, makes
+        xtrabackup rebuild all secondary indexes after applying the log.
+        This option is normally used to prepare compact backups. See the
+        XtraBackup manual for more information.
+
+    --rebuild-threads
+        This option only has effect when used together with the --apply-log
+        and --rebuild-indexes option and is passed directly to xtrabackup.
+        When used, xtrabackup processes tablespaces in parallel with the
+        specified number of threads when rebuilding indexes. See the
+        XtraBackup manual for more information.
+
+    --redo-only
+        This option should be used when preparing the base full backup and
+        when merging all incrementals except the last one. This option is
+        passed directly to xtrabackup's --apply-log-only option. This forces
+        xtrabackup to skip the "rollback" phase and do a "redo" only. This
+        is necessary if the backup will have incremental changes applied to
+        it later. See the xtrabackup documentation for details.
+
+    --rsync
+        Uses the rsync utility to optimize local file transfers. When this
+        option is specified, innobackupex uses rsync to copy all non-InnoDB
+        files instead of spawning a separate cp for each file, which can be
+        much faster for servers with a large number of databases or tables.
+        This option cannot be used together with --stream.
+
+    --safe-slave-backup
+        Stop slave SQL thread and wait to start backup until
+        Slave_open_temp_tables in "SHOW STATUS" is zero. If there are no
+        open temporary tables, the backup will take place, otherwise the SQL
+        thread will be started and stopped until there are no open temporary
+        tables. The backup will fail if Slave_open_temp_tables does not
+        become zero after --safe-slave-backup-timeout seconds. The slave SQL
+        thread will be restarted when the backup finishes.
+
+    --safe-slave-backup-timeout
+        How many seconds --safe-slave-backup should wait for
+        Slave_open_temp_tables to become zero. (default 300)
+
+    --slave-info
+        This option is useful when backing up a replication slave server. It
+        prints the binary log position and name of the master server. It
+        also writes this information to the "xtrabackup_slave_info" file as
+        a "CHANGE MASTER" command. A new slave for this master can be set up
+        by starting a slave server on this backup and issuing a "CHANGE
+        MASTER" command with the binary log position saved in the
+        "xtrabackup_slave_info" file.
+
+    --socket=SOCKET
+        This option specifies the socket to use when connecting to the local
+        database server with a UNIX domain socket. The option accepts a
+        string argument. It is passed to the mysql child process without
+        alteration. See mysql --help for details.
+
+    --stream=STREAMNAME
+        This option specifies the format in which to do the streamed backup.
+        The option accepts a string argument. The backup will be done to
+        STDOUT in the specified format. Currently, the only supported
+        formats are tar and xbstream. This option is passed directly to
+        xtrabackup's --stream option.
+
+    --tables-file=FILE
+        This option specifies the file in which there are a list of names of
+        the form database. The option accepts a string argument.table, one
+        per line. The option is passed directly to xtrabackup's
+        --tables-file option.
+
+    --throttle=IOS
+        This option specifies a number of I/O operations (pairs of
+        read+write) per second. It accepts an integer argument. It is passed
+        directly to xtrabackup's --throttle option.
+
+    --tmpdir=DIRECTORY
+        This option specifies the location where a temporary file will be
+        stored. The option accepts a string argument. It should be used when
+        --stream is specified. For these options, the transaction log will
+        first be stored to a temporary file, before streaming. This option
+        specifies the location where that temporary file will be stored. If
+        the option is not specified, the default is to use the value of
+        tmpdir read from the server configuration.
+
+    --use-memory=B
+        This option accepts a string argument that specifies the amount of
+        memory in bytes for xtrabackup to use for crash recovery while
+        preparing a backup. Multiples are supported providing the unit (e.g.
+        1MB, 1GB). It is used only with the option --apply-log. It is passed
+        directly to xtrabackup's --use-memory option. See the xtrabackup
+        documentation for details.
+
+    --user=NAME
+        This option specifies the MySQL username used when connecting to the
+        server, if that's not the current user. The option accepts a string
+        argument. It is passed to the mysql child process without
+        alteration. See mysql --help for details.
+
+    --version
+        This option displays the xtrabackup version and copyright notice and
+        then exits.
+
+    --version-check
+        This option controls if the version check should be executed by
+        innobackupex after connecting to the server on the backup stage.
+        This option is enabled by default, disable with --no-version-check.
+
+[root@AY140715115907471c85Z backup]#
+```
 
 
 
