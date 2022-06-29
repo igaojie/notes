@@ -1863,3 +1863,14 @@ http://127.0.0.1:8000/openapi.json
 
 
 
+# QA
+
+##  No module named 'tkinter'
+
+```py
+"/usr/lib/python3.8/turtle.py", line 107, in <module> import tkinter as TK ModuleNotFoundError: No module named 'tkinter'
+
+
+apt-get update && apt install tk-dev && apt install python3-tk
+```
+

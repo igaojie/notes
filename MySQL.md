@@ -257,8 +257,16 @@
    4. 
    
    5. 22
-   
-   6. 
+
+# 配置项
+
+## local-infile
+
+## log-error
+
+## symbolic-links
+
+
 
 # Master-Slave 主从同步
 

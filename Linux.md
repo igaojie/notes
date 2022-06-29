@@ -767,3 +767,161 @@ service network restart
 
 ```
 
+# 磁盘挂载
+
+```shell
+(base) [root@localhost ~]# fdisk -l
+
+磁盘 /dev/sda：256.1 GB, 256060514304 字节，500118192 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x0009f174
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048     1026047      512000   83  Linux
+/dev/sda2         1026048   500117503   249545728   8e  Linux LVM
+
+磁盘 /dev/mapper/centos-root：238.4 GB, 238353907712 字节，465534976 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+磁盘 /dev/mapper/centos-swap：17.2 GB, 17179869184 字节，33554432 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+磁盘 /dev/sdb：1024.2 GB, 1024209543168 字节，2000409264 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+
+(base) [root@localhost ~]# fdisk /dev/sdb
+欢迎使用 fdisk (util-linux 2.23.2)。
+
+更改将停留在内存中，直到您决定将更改写入磁盘。
+使用写入命令前请三思。
+
+Device does not contain a recognized partition table
+使用磁盘标识符 0x0616902b 创建新的 DOS 磁盘标签。
+
+命令(输入 m 获取帮助)：p
+
+磁盘 /dev/sdb：1024.2 GB, 1024209543168 字节，2000409264 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x0616902b
+
+   设备 Boot      Start         End      Blocks   Id  System
+
+命令(输入 m 获取帮助)：n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): p
+分区号 (1-4，默认 1)：1
+起始 扇区 (2048-2000409263，默认为 2048)：
+将使用默认值 2048
+Last 扇区, +扇区 or +size{K,M,G} (2048-2000409263，默认为 2000409263)：
+将使用默认值 2000409263
+分区 1 已设置为 Linux 类型，大小设为 953.9 GiB
+
+命令(输入 m 获取帮助)：w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+正在同步磁盘。
+(base) [root@localhost ~]# fdisk -l
+
+磁盘 /dev/sda：256.1 GB, 256060514304 字节，500118192 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x0009f174
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sda1   *        2048     1026047      512000   83  Linux
+/dev/sda2         1026048   500117503   249545728   8e  Linux LVM
+
+磁盘 /dev/mapper/centos-root：238.4 GB, 238353907712 字节，465534976 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+磁盘 /dev/mapper/centos-swap：17.2 GB, 17179869184 字节，33554432 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+磁盘 /dev/sdb：1024.2 GB, 1024209543168 字节，2000409264 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x0616902b
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048  2000409263  1000203608   83  Linux
+(base) [root@localhost ~]#
+(base) [root@localhost ~]#
+(base) [root@localhost ~]# mkfs.
+mkfs.btrfs   mkfs.ext2    mkfs.ext4    mkfs.minix   mkfs.vfat
+mkfs.cramfs  mkfs.ext3    mkfs.fat     mkfs.msdos   mkfs.xfs
+(base) [root@localhost ~]# mkfs.ext4 /dev/sdb1
+mke2fs 1.42.9 (28-Dec-2013)
+Discarding device blocks: 完成
+文件系统标签=
+OS type: Linux
+块大小=4096 (log=2)
+分块大小=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+62513152 inodes, 250050902 blocks
+12502545 blocks (5.00%) reserved for the super user
+第一个数据块=0
+Maximum filesystem blocks=2399141888
+7631 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks:
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+	4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968,
+	102400000, 214990848
+
+Allocating group tables: 完成
+正在写入inode表: 完成
+Creating journal (32768 blocks): 完成
+Writing superblocks and filesystem accounting information: 完成
+
+(base) [root@localhost ~]#
+
+
+(base) [root@localhost ~]# mkdir /data
+data/  data1/
+(base) [root@localhost ~]# mkdir /data2
+(base) [root@localhost ~]# mount /dev/sdb1 /data2/
+(base) [root@localhost ~]# df -lh
+文件系统                 容量  已用  可用 已用% 挂载点
+devtmpfs                 7.8G     0  7.8G    0% /dev
+tmpfs                    7.8G  4.0K  7.8G    1% /dev/shm
+tmpfs                    7.8G  709M  7.1G    9% /run
+tmpfs                    7.8G     0  7.8G    0% /sys/fs/cgroup
+/dev/mapper/centos-root  222G  200G   23G   90% /
+/dev/sda1                497M  169M  329M   34% /boot
+tmpfs                    1.6G     0  1.6G    0% /run/user/0
+tmpfs                    1.6G     0  1.6G    0% /run/user/1002
+tmpfs                    1.6G     0  1.6G    0% /run/user/994
+/dev/sdb1                939G   77M  891G    1% /data2
+(base) [root@localhost ~]#
+```
+
