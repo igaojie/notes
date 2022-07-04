@@ -925,3 +925,19 @@ tmpfs                    1.6G     0  1.6G    0% /run/user/994
 (base) [root@localhost ~]#
 ```
 
+# YUM
+
+1、 Cannot prepare internal mirrorlist: No URLs in mirrorlist
+
+```she
+ 在2022年1月31日，CentOS团队终于从官方镜像中移除CentOS 8的所有包。
+CentOS 8已于2021年12月31日寿终正非，但软件包仍在官方镜像上保留了一段时间。现在他们被转移到https://vault.centos.org
+
+解决方法
+如果你仍然需要运行CentOS 8，你可以在/etc/yum.repos.d中更新一下源。使用vault.centos.org代替mirror.centos.org。
+
+ 
+# sudo sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*
+# sudo sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*
+```
+

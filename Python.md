@@ -360,6 +360,14 @@ Executing transaction: done
 conda activate py3-8
 ```
 
+# Anaconda3
+
+https://www.anaconda.com/products/distribution/download-success-2
+
+
+
+
+
 # 进制转换
 
 ```python
