@@ -138,51 +138,129 @@ shaogaojie@192 projects % brew update
 
 ```
 
+##### Redis.so 扩展
 
 
-1. Redis.so 扩展
+
+```shell
+git clone https://www.github.com/phpredis/phpredis.git
+cd phpredis
+phpize && ./configure && make && sudo make install
+
+
+Password:
+Installing shared extensions:     /usr/local/Cellar/php@8.0/8.0.20/pecl/20200930/
+shaogaojie@192 phpredis % php --ini
+Configuration File (php.ini) Path: /usr/local/etc/php/8.0
+Loaded Configuration File:         /usr/local/etc/php/8.0/php.ini
+Scan for additional .ini files in: /usr/local/etc/php/8.0/conf.d
+Additional .ini files parsed:      /usr/local/etc/php/8.0/conf.d/ext-opcache.ini
+
+shaogaojie@192 phpredis % cd /usr/local/Cellar/php@8.0/8.0.20/pecl/20200930/
+
+
+extension=/usr/local/Cellar/php@8.0/8.0.20/pecl/20200930/redis.so
+
+重启服务即可。
+
+```
+
+##### 常见问题
+
+1. 31481#0: *212 open() "/usr/local/var/run/nginx/client_body_temp/0000000050" failed (13: Permission denied)
 
    ```shell
-   git clone https://www.github.com/phpredis/phpredis.git
-   cd phpredis
-   phpize && ./configure && make && sudo make install
+   https://github.com/denji/homebrew-nginx/issues/124
    
-   
-   Password:
-   Installing shared extensions:     /usr/local/Cellar/php@8.0/8.0.20/pecl/20200930/
-   shaogaojie@192 phpredis % php --ini
-   Configuration File (php.ini) Path: /usr/local/etc/php/8.0
-   Loaded Configuration File:         /usr/local/etc/php/8.0/php.ini
-   Scan for additional .ini files in: /usr/local/etc/php/8.0/conf.d
-   Additional .ini files parsed:      /usr/local/etc/php/8.0/conf.d/ext-opcache.ini
-   
-   shaogaojie@192 phpredis % cd /usr/local/Cellar/php@8.0/8.0.20/pecl/20200930/
-   
-   
-   extension=/usr/local/Cellar/php@8.0/8.0.20/pecl/20200930/redis.so
-   
-   重启服务即可。
-   
+   ~ sudo chown -vhR $USER:admin /usr/local/var/run/nginx/*_temp
+   ~ sudo chmod -vR 700 /usr/local/var/run/nginx/*_temp
+   重启Nginx
    ```
 
    
 
-   
+2. 
 
-   
+#### PHP7.3
 
-   
+```shell
+brew install shivammathur/php/php@7.3
 
-   ```shell
-   
-     
-   ```
+==> Caveats
+To enable PHP in Apache add the following to httpd.conf and restart Apache:
+    LoadModule php7_module /usr/local/opt/php@7.3/lib/httpd/modules/libphp7.so
 
-   
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
 
-2. x
+Finally, check DirectoryIndex includes index.php
+    DirectoryIndex index.php index.html
 
-3. 
+The php.ini and php-fpm.ini file can be found in:
+    /usr/local/etc/php/7.3/
+
+php@7.3 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have php@7.3 first in your PATH, run:
+  echo 'export PATH="/usr/local/opt/php@7.3/bin:$PATH"' >> ~/.zshrc
+  echo 'export PATH="/usr/local/opt/php@7.3/sbin:$PATH"' >> ~/.zshrc
+
+For compilers to find php@7.3 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/php@7.3/lib"
+  export CPPFLAGS="-I/usr/local/opt/php@7.3/include"
+
+
+To restart shivammathur/php/php@7.3 after an upgrade:
+  brew services restart shivammathur/php/php@7.3
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/php@7.3/sbin/php-fpm --nodaemonize
+==> Summary
+🍺  /usr/local/Cellar/php@7.3/7.3.33_2: 518 files, 74.7MB
+==> Running `brew cleanup php@7.3`...
+Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
+Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
+==> Caveats
+==> php@7.3
+To enable PHP in Apache add the following to httpd.conf and restart Apache:
+    LoadModule php7_module /usr/local/opt/php@7.3/lib/httpd/modules/libphp7.so
+
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+
+Finally, check DirectoryIndex includes index.php
+    DirectoryIndex index.php index.html
+
+The php.ini and php-fpm.ini file can be found in:
+    /usr/local/etc/php/7.3/
+
+php@7.3 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have php@7.3 first in your PATH, run:
+  echo 'export PATH="/usr/local/opt/php@7.3/bin:$PATH"' >> ~/.zshrc
+  echo 'export PATH="/usr/local/opt/php@7.3/sbin:$PATH"' >> ~/.zshrc
+
+For compilers to find php@7.3 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/php@7.3/lib"
+  export CPPFLAGS="-I/usr/local/opt/php@7.3/include"
+
+
+To restart shivammathur/php/php@7.3 after an upgrade:
+  brew services restart shivammathur/php/php@7.3
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/php@7.3/sbin/php-fpm --nodaemonize
+  
+  
+修改端口：
+vim /usr/local/etc/php/7.3/php-fpm.d/www.conf
+
+listen = 127.0.0.1:9073 # 修改为9073端口
+```
+
+
 
 #### PHP 5.6
 

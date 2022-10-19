@@ -326,6 +326,19 @@ docker安装时如果不指定目录（也就是工作目录），一般默认�
 
    
 
+# 开机自启动
+
+```shell
+~ systemctl enable docker
+Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
+
+~ systemctl list-unit-files | grep enable | grep docker
+docker.service                             enabled
+
+```
+
+
+
 # 基本命令
 
 ## docker run
