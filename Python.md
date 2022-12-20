@@ -1867,6 +1867,12 @@ http://127.0.0.1:8000/openapi.json
 
 ## aiohttp
 
+## PyAutoGUI
+
+https://github.com/asweigart/pyautogui/blob/master/docs/simplified-chinese.ipynb
+
+
+
 ## YOLOv5
 
 ```shell

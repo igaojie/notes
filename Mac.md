@@ -60,6 +60,124 @@ source ~/.bash_profile
 
 ### PHP
 
+#### PHP 8.1
+
+```shell
+
+(base) ➜  ~ brew install php@8.1
+Running `brew update --auto-update`...
+==> Auto-updated Homebrew!
+Updated 3 taps (shivammathur/extensions, homebrew/cask and mongodb/brew).
+
+You have 4 outdated formulae installed.
+You can upgrade them with brew upgrade
+or list them with brew outdated.
+Warning: Unexpected method 'arch' called on Cask portfolioperformance.
+Follow the instructions here:
+  https://github.com/Homebrew/homebrew-cask#reporting-bugs
+Error: Cask 'portfolioperformance' definition is invalid: invalid 'sha256' value: {:arm=>"1ef02d552f3dd3456a64190698d10619f13729a17ddff9b68f737c70cead7da9", :intel=>"46762af0f3c9a6e3c7b6fef59187f9137940bd5268c0d55ebe46173f7cd59e03"}
+Warning: You are using macOS 13.
+We do not provide support for this pre-release version.
+You will encounter build failures with some formulae.
+Please create pull requests instead of asking for help on Homebrew's GitHub,
+Twitter or any other official channels. You are responsible for resolving
+any issues you experience while you are running this
+pre-release version.
+
+==> Downloading https://ghcr.io/v2/homebrew/core/php/manifests/8.1.7
+Already downloaded: /Users/shaogaojie/Library/Caches/Homebrew/downloads/89cb01f775160592e5ee9f32185ebf9c33c7da79cc31567a5017333b5a9c987d--php-8.1.7.bottle_manifest.json
+==> Downloading https://ghcr.io/v2/homebrew/core/php/blobs/sha256:746cac3b382d0fe60a81fed68f51022f5797f
+==> Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:746cac3b382d0fe60a
+######################################################################## 100.0%
+==> Pouring php--8.1.7.monterey.bottle.tar.gz
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set php_ini /usr/local/etc/php/8.1/php.ini system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set php_dir /usr/local/share/pear system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set doc_dir /usr/local/share/pear/doc system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set ext_dir /usr/local/lib/php/pecl/20210902 system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set bin_dir /usr/local/opt/php/bin system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set data_dir /usr/local/share/pear/data system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set cfg_dir /usr/local/share/pear/cfg system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set www_dir /usr/local/share/pear/htdocs system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set man_dir /usr/local/share/man system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set test_dir /usr/local/share/pear/test system
+==> /usr/local/Cellar/php/8.1.7/bin/pear config-set php_bin /usr/local/opt/php/bin/php system
+==> /usr/local/Cellar/php/8.1.7/bin/pear update-channels
+==> Caveats
+To enable PHP in Apache add the following to httpd.conf and restart Apache:
+    LoadModule php_module /usr/local/opt/php/lib/httpd/modules/libphp.so
+
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+
+Finally, check DirectoryIndex includes index.php
+    DirectoryIndex index.php index.html
+
+The php.ini and php-fpm.ini file can be found in:
+    /usr/local/etc/php/8.1/
+
+To restart php after an upgrade:
+  brew services restart php
+  
+  
+  brew services restart php@8.1
+Stopping `php`... (might take a while)
+==> Successfully stopped `php` (label: homebrew.mxcl.php)
+==> Successfully started `php` (label: homebrew.mxcl.php)
+
+
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/php/sbin/php-fpm --nodaemonize
+==> Summary
+🍺  /usr/local/Cellar/php/8.1.7: 513 files, 80.1MB
+==> Running `brew cleanup php`...
+Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
+Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
+(base) ➜  ~
+```
+
+##### Redis.so 扩展
+
+```shell
+1、下载redis源码
+cd /tmp
+git clone https://www.github.com/phpredis/phpredis.git
+(base) ➜  /tmp cd phpredis
+
+2、
+/usr/local/Cellar/php/8.1.7/bin/phpize
+./configure --with-php-config=/usr/local/Cellar/php/8.1.7/bin/php-config
+
+3、make && make install
+Installing shared extensions:     /usr/local/Cellar/php/8.1.7/pecl/20210902/
+
+4、配置
+/usr/local/Cellar/php/8.1.7/bin/php --ini
+Configuration File (php.ini) Path: /usr/local/etc/php/8.1
+Loaded Configuration File:         /usr/local/etc/php/8.1/php.ini
+Scan for additional .ini files in: /usr/local/etc/php/8.1/conf.d
+Additional .ini files parsed:      /usr/local/etc/php/8.1/conf.d/ext-opcache.ini
+
+(base) ➜  phpredis git:(develop) ✗ vim /usr/local/etc/php/8.1/php.ini
+extension=/usr/local/Cellar/php/8.1.7/pecl/20210902/redis.so
+
+5、brew services restart php@8.1 重启即可
+```
+
+##### MongoDB.so 扩展
+
+```shell
+./configure --with-php-config=/usr/local/Cellar/php/8.1.7/bin/php-config1、下载 https://pecl.php.net/package/mongodb
+2、cd mongodb-1.15.0/mongodb-1.15.0
+3、/usr/local/Cellar/php/8.1.7/bin/phpize
+4、./configure --with-php-config=/usr/local/Cellar/php/8.1.7/bin/php-config
+5、make && make install
+6、vim /usr/local/etc/php/8.1/php.ini
+extension=/usr/local/Cellar/php/8.1.7/pecl/20210902/mongodb.so
+```
+
+
+
 #### PHP 8.0
 
 ```SHELL

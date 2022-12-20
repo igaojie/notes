@@ -1187,6 +1187,59 @@ AND TABLE_TYPE="BASE TABLE";
 ALTER TABLE tbl_name ADD id INT PRIMARY KEY AUTO_INCREMENT;
 ```
 
+# 全文索引
+
+## 全文解析器**Ngram**
+
+1. 可以支持中文、日文、韩文分词
+
+2. 只有char、varchar、text类型字段能创建全文索引
+
+3. 英文分词用空格，逗号；中文分词用 ngram_token_size 设定。
+
+4. 模式
+
+   1. **自然语言模式(NATURAL LANGUAGE MODE)**
+
+   2. **BOOLEAN模式(BOOLEAN MODE)**
+
+      BOOLEAN模式可以使用操作符，可以支持指定关键词必须出现或者必须不能出现或者关键词的权重高还是低等复杂查询
+
+      ```
+      1.'dog cat'
+      字段当中加一个空格，表示查询结果中包含dog或者cat
+      2.'+dog +cat'
+      字段前面加'+'，表示必须同时包含dog和cat
+      3.'+dog cat'
+      表示必须包含dog，对cat并不强制，如果出现cat，则相关性会更高
+      4.'+dog -cat'
+      表示必须包含dog，必须不包含cat
+      5.'+dog ~cat'
+      表示必须包含dog，对cat并不强制，如果出现cat，则相关性会变低
+      6.'+dog +(>cat <pig)'
+      表示必须包含dog和cat或者包含dog和pig,但是dog cat的相关性比dog pig的相关性高
+      7.'dog*'
+      表示包含以dog开头的内容
+      
+      ```
+
+```mysql
+/* 14:31:30 bingli[生产] bingli */ SELECT * FROM all_repeat_reports_ngram 
+WHERE MATCH (YAOFANG) AGAINST ('+枸杞 -阿胶' in boolean mode) 
+and MATCH(XIANGBINGSHI) AGAINST('纳眠' IN BOOLEAN MODE)
+;
+
+/* 14:24:45 bingli[生产] bingli */ ALTER TABLE all_repeat_reports_ngram ADD FULLTEXT INDEX idx_yaofang ( YAOFANG ) WITH PARSER ngram;
+
+/* 14:21:15 bingli[生产] bingli */ ALTER TABLE `all_repeat_reports_ngram` ADD FULLTEXT INDEX `idx_zhusu` (`ZHUSU`) WITH PARSER ngram;
+
+/* 14:21:15 bingli[生产] bingli */ ALTER TABLE `all_repeat_reports_ngram` ADD FULLTEXT INDEX `idx_xianbingshi` (`XIANGBINGSHI`) WITH PARSER ngram;
+
+
+```
+
+
+
 # pt-online-schema-change
 
 1. 使用场景
